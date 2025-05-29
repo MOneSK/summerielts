@@ -1,0 +1,250 @@
+<script type="text/javascript">    
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>45-Day IELTS Summer Journey</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-900 font-sans">
+  <!-- Navigation Bar -->
+  <nav class="bg-blue-600 text-white p-4 sticky top-0 z-10">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">45-Day IELTS Summer Journey</h1>
+      <div>
+        <a href="#home" class="px-4 hover:underline" >Home</a>
+        <a href="#study-plan" class="px-4 hover:underline" >Study Plan</a>
+        <a href="#resources" class="px-4 hover:underline" >Resources</a>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Home Section -->
+  <section id="home" class="min-h-screen flex items-center justify-center pt-16">
+    <div class="text-center text-gray-300">
+      <h2 class="text-4xl font-bold mb-4">Welcome to Your IELTS Journey</h2>
+      <p class="text-lg">A 45-day plan to ace your IELTS exam this summer!</p>
+    </div>
+  </section>
+
+  <!-- Study Plan Section -->
+  <section id="study-plan" class="min-h-screen p-8 pt-16">
+    <h2 class="text-3xl font-bold text-gray-200 mb-6">Study Plan</h2>
+    <div class="bg-gray-800 p-6 rounded-lg shadow-md text-gray-300">
+      <p class="mb-4">Follow this structured 45-day plan to improve your skills.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border-collapse text-left text-gray-300">
+          <thead>
+            <tr class="bg-blue-600 text-white">
+              <th class="px-4 py-2">Week</th>
+              <th class="px-4 py-2">Focus</th>
+              <th class="px-4 py-2">Activities</th>
+              <th class="px-4 py-2">Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Weeks 1-2 -->
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2 font-semibold" rowspan="3">Weeks 1–2</td>
+              <td class="px-4 py-2" rowspan="3">Understand IELTS criteria, identify weaknesses, and build consistent study habits</td>
+              <td class="px-4 py-2">
+                <strong>Writing:</strong><br>
+                - Analyze Band 7+ sample essays from <a href="https://ieltsliz.com/ielts-writing-task-2/" class="text-blue-400 hover:underline" target="_blank">IELTS Liz</a> and <a href="https://www.ielts-simon.com/" class="text-blue-400 hover:underline" target="_blank">IELTS Simon</a>.<br>
+                - Practice writing introductions and conclusions for Task 2 essays.<br>
+                - Work on sentence structures and grammar accuracy.
+              </td>
+              <td class="px-4 py-2">30 min/day</td>
+            </tr>
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2">
+                <strong>Speaking:</strong><br>
+                - Practice Part 1 and Part 2 questions using <a href="https://ieltsliz.com/ielts-speaking-topics/" class="text-blue-400 hover:underline" target="_blank">IELTS Speaking Topics</a>.<br>
+                - Record responses and self-evaluate for fluency and coherence.<br>
+                - Focus on expanding answers with reasons and examples.
+              </td>
+              <td class="px-4 py-2">30 min/day</td>
+            </tr>
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2">
+                <strong>Reading & Listening:</strong><br>
+                - Read articles from <a href="https://www.bbc.co.uk/learningenglish" class="text-blue-400 hover:underline" target="_blank">BBC Learning English</a> to enhance vocabulary.<br>
+                - Listen to <a href="https://www.ted.com/talks" class="text-blue-400 hover:underline" target="_blank">TED Talks</a> and summarize main points.
+              </td>
+              <td class="px-4 py-2">15 min each/day</td>
+            </tr>
+            <!-- Weeks 3-4 -->
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2 font-semibold" rowspan="3">Weeks 3–4</td>
+              <td class="px-4 py-2" rowspan="3">Intensive practice with feedback and time management</td>
+              <td class="px-4 py-2">
+                <strong>Writing:</strong><br>
+                - Write full Task 1 and Task 2 essays under timed conditions.<br>
+                - Seek feedback from teachers or online forums.<br>
+                - Implement advanced grammar structures and cohesive devices.
+              </td>
+              <td class="px-4 py-2">45 min/day</td>
+            </tr>
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2">
+                <strong>Speaking:</strong><br>
+                - Engage in mock interviews with a study partner or tutor.<br>
+                - Practice Part 3 questions, focusing on abstract topics.<br>
+                - Work on pronunciation, intonation, and stress patterns.
+              </td>
+              <td class="px-4 py-2">45 min/day</td>
+            </tr>
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2">
+                <strong>Reading & Listening:</strong><br>
+                - Complete practice tests from <a href="https://www.study4.com" class="text-blue-400 hover:underline" target="_blank">IELTS Practice Tests</a>.<br>
+                - Review incorrect answers to understand mistakes.
+              </td>
+              <td class="px-4 py-2">15 min each/day</td>
+            </tr>
+            <!-- Weeks 5-6 -->
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2 font-semibold" rowspan="3">Weeks 5–6</td>
+              <td class="px-4 py-2" rowspan="3">Simulate test conditions and refine strategies</td>
+              <td class="px-4 py-2">
+                <strong>Writing:</strong><br>
+                - Alternate between Task 1 and Task 2 essays.<br>
+                - Focus on clarity, coherence, and task response.<br>
+                - Review and revise essays based on feedback.
+              </td>
+              <td class="px-4 py-2">1 hr/day</td>
+            </tr>
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2">
+                <strong>Speaking:</strong><br>
+                - Participate in full speaking tests with a tutor or language exchange partner.<br>
+                - Work on extending answers and using a range of vocabulary.<br>
+                - Record sessions to identify areas for improvement.
+              </td>
+              <td class="px-4 py-2">1 hr/day</td>
+            </tr>
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2">
+                <strong>Reading & Listening:</strong><br>
+                - Focus on sections where you previously made errors.<br>
+                - Practice under timed conditions to improve speed and accuracy.
+              </td>
+              <td class="px-4 py-2">15 min each/day</td>
+            </tr>
+            <!-- Week 7 -->
+            <tr class="border-b border-gray-700">
+              <td class="px-4 py-2 font-semibold" rowspan="2">Week 7</td>
+              <td class="px-4 py-2" rowspan="2">Consolidate knowledge, review mistakes, and prepare mentally for the exam</td>
+              <td class="px-4 py-2">
+                <strong>Writing & Speaking:</strong><br>
+                - Review all previous essays and speaking recordings.<br>
+                - Identify recurring mistakes and work on correcting them.<br>
+                - Practice with a focus on fluency and coherence.
+              </td>
+              <td class="px-4 py-2">1 hr/day</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2">
+                <strong>Reading & Listening:</strong><br>
+                - Complete one full reading and listening test.<br>
+                - Analyze performance and focus on time management.
+              </td>
+              <td class="px-4 py-2">30 min each/day</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources Section -->
+  <section id="resources" class="min-h-screen p-8 pt-16">
+    <h2 class="text-3xl font-bold text-gray-200 mb-6">Resources</h2>
+    <div class="bg-gray-800 p-6 rounded-lg shadow-md text-gray-300">
+      <p>Explore recommended books, websites, and practice tests.</p>
+      <!-- Add more content as needed -->
+    </div>
+  </section>
+
+  <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
