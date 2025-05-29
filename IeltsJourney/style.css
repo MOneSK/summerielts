@@ -1,0 +1,23 @@
+/* styles.css */
+#daily-tasks {
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  #daily-tasks.show {
+    opacity: 1;
+  }
+  
+  .task-day {
+    margin-bottom: 1.5rem;
+  }
+  
+  .task-day h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .task-day ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+  }
