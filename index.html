@@ -12,7 +12,7 @@
 <body>
     <header>
         <h1>IELTS Speaking Workout</h1>
-        <p>Your weekly plan to achieve fluency and confidence.</p>
+        <p>Your weekly plan to achieve fluency and confidence. Click a day below to see the task.</p>
     </header>
 
     <main>
@@ -26,31 +26,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr data-day="monday">
                         <td>Monday</td>
                         <td>2–3 Part 1 questions (focus on fluency, intonation)</td>
                     </tr>
-                    <tr>
+                    <tr data-day="tuesday">
                         <td>Tuesday</td>
                         <td>1 Part 2 card (record, listen, improve structure)</td>
                     </tr>
-                    <tr>
+                    <tr data-day="wednesday">
                         <td>Wednesday</td>
                         <td>2 Part 3 questions (develop deeper ideas)</td>
                     </tr>
-                    <tr>
+                    <tr data-day="thursday">
                         <td>Thursday</td>
                         <td>Mix of Part 1 + idioms or grammar practice</td>
                     </tr>
-                    <tr>
+                    <tr data-day="friday">
                         <td>Friday</td>
                         <td>Mock Speaking Test (full Part 1–2–3, time yourself)</td>
                     </tr>
-                    <tr>
+                    <tr data-day="saturday">
                         <td>Saturday</td>
                         <td>Review + fix grammar/vocab from your recordings</td>
                     </tr>
-                    <tr>
+                    <tr data-day="sunday">
                         <td>Sunday</td>
                         <td>Chill day: watch interviews, mimic pronunciation</td>
                     </tr>
@@ -59,7 +59,7 @@
         </section>
 
         <section id="daily-workouts">
-            <div class="day-card">
+            <div id="monday-card" class="day-card hidden">
                 <h3>Monday: Part 1 Foundations</h3>
                 <p>Focus on fluency and natural intonation.</p>
                 <div class="interactive-area">
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="day-card">
+            <div id="tuesday-card" class="day-card hidden">
                 <h3>Tuesday: Part 2 Cue Card</h3>
                 <p>Record your response, then listen back to analyze structure and timing.</p>
                 <div class="interactive-area">
@@ -78,7 +78,7 @@
                 </div>
             </div>
 
-            <div class="day-card">
+            <div id="wednesday-card" class="day-card hidden">
                 <h3>Wednesday: Part 3 Deep Dive</h3>
                 <p>Develop and structure well-reasoned arguments.</p>
                  <div class="interactive-area">
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <div class="day-card">
+            <div id="thursday-card" class="day-card hidden">
                 <h3>Thursday: Polish & Practice</h3>
                 <p>Incorporate new idioms or focus on a specific grammar point.</p>
                 <div class="interactive-area">
@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="day-card">
+            <div id="friday-card" class="day-card hidden">
                 <h3>Friday: Mock Test Simulation</h3>
                 <p>Time yourself for a full Part 1, 2, and 3 test.</p>
                 <div class="interactive-area">
@@ -107,7 +107,7 @@
                 </div>
             </div>
 
-            <div class="day-card">
+            <div id="saturday-card" class="day-card hidden">
                 <h3>Saturday: Review & Refine</h3>
                 <p>Analyze this week's recordings. Identify and correct recurring errors.</p>
                 <div class="interactive-area">
@@ -116,7 +116,7 @@
                 </div>
             </div>
 
-            <div class="day-card">
+            <div id="sunday-card" class="day-card hidden">
                 <h3>Sunday: Active Listening</h3>
                 <p>Watch native speakers and mimic their pronunciation and rhythm.</p>
                 <div class="interactive-area">
@@ -129,5 +129,7 @@
     <footer>
         <p>Keep practicing. Consistency is key to success.</p>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
