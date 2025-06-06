@@ -22,9 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
         notificationMessage.textContent = message;
         notification.classList.remove('hidden');
         const timerLine = notification.querySelector('.notification-timer-line');
-        timerLine.style.animation = 'none';
-        timerLine.offsetHeight;
-        timerLine.style.animation = '';
+        if (timerLine) {
+            timerLine.style.animation = 'none';
+            timerLine.offsetHeight; // Trigger reflow to restart animation
+            timerLine.style.animation = '';
+        }
         notificationTimeout = setTimeout(() => {
             notification.classList.add('hidden');
         }, 15000);
@@ -105,8 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- THIS ENTIRE BLOCK WAS MISSING ---
-    // --- Audio Recorder Logic ---
+    // --- Audio Recorder Logic with Error Handling ---
     document.querySelectorAll('.record-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const card = btn.closest('.day-card');
@@ -114,7 +115,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const player = card.querySelector('.audio-player');
             const downloadBtn = card.querySelector('.download-btn');
             try {
+                // We "try" to get the microphone
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                // If successful, the rest of this block runs
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
                 audioChunks = [];
@@ -132,9 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     stream.getTracks().forEach(track => track.stop());
                 });
             } catch (err) {
+                // If getting the mic fails, this "catch" block runs
                 showNotification("Could not access microphone. Please grant permission.");
                 console.error("Mic error:", err);
-                btn.disabled = false; // Re-enable button if permission denied
+                // Re-enable the record button so the user can try again
+                btn.disabled = false; 
             }
         });
     });
@@ -163,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(a);
         });
     });
-    // --- END OF MISSING BLOCK ---
 
     // --- Initial Load ---
     loadData();
