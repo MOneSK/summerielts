@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         notification.classList.remove('hidden');
         notificationTimeout = setTimeout(() => {
             notification.classList.add('hidden');
-        }, 15000);
+        }, 3500);
     }
 
     // --- Core Logic ---
