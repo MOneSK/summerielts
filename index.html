@@ -1,210 +1,133 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IELTS Speaking Workout Planner</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-        .day-card {
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-        .day-card:nth-child(1):hover { background-color: #ff4d4d; } /* Monday: Red */
-        .day-card:nth-child(2):hover { background-color: #ff6b3b; } /* Tuesday: Red-Orange */
-        .day-card:nth-child(3):hover { background-color: #ff8c3b; } /* Wednesday: Orange-Red */
-        .day-card:nth-child(4):hover { background-color: #ff4d4d; } /* Thursday: Red */
-        .day-card:nth-child(5):hover { background-color: #ff6b3b; } /* Friday: Red-Orange */
-        .day-card:nth-child(6):hover { background-color: #ff8c3b; } /* Saturday: Orange-Red */
-        .day-card:nth-child(7):hover { background-color: #ff4d4d; } /* Sunday: Red */
-        .day-card:hover {
-            transform: scale(1.05);
-        }
-        .header-gradient {
-            background: linear-gradient(to right, #ff4d4d, #ff8c3b);
-        }
-        .completed {
-            background-color: #4b5563;
-            text-decoration: line-through;
-        }
-        .checkbox {
-            accent-color: #ff4d4d;
-        }
-    </style>
+    <title>IELTS Speaking Workout</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="max-w-4xl w-full bg-gray-900 rounded-lg shadow-lg p-6">
-        <h1 class="text-3xl font-bold text-center text-white mb-6 p-4 header-gradient rounded-lg">IELTS Speaking Workout Planner</h1>
-        <p class="text-center text-gray-300 mb-8">Follow your weekly IELTS Speaking routine. Check off completed days to move to the next one!</p>
-        
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+<body>
+    <header>
+        <h1>IELTS Speaking Workout</h1>
+        <p>Your weekly plan to achieve fluency and confidence.</p>
+    </header>
+
+    <main>
+        <section id="weekly-recap">
+            <h2>Weekly Routine Recap</h2>
+            <table>
                 <thead>
-                    <tr class="bg-gradient-to-r from-red-600 to-orange-500 text-white">
-                        <th class="p-4 font-semibold">Done</th>
-                        <th class="p-4 font-semibold">Day</th>
-                        <th class="p-4 font-semibold">Focus</th>
+                    <tr>
+                        <th>Day</th>
+                        <th>Focus</th>
                     </tr>
                 </thead>
-                <tbody id="routineTable">
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Monday" onclick="showDetails('Monday', '2–3 Part 1 questions (focus on fluency, intonation)', 'Answer 2–3 Part 1 questions (e.g., about hobbies, hometown, or studies). Focus on speaking smoothly with natural intonation. Practice for 15–30 seconds per answer. Try questions like: What do you do in your free time? or Where are you from?')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Monday', this)"></td>
-                        <td class="p-4 text-white">Monday</td>
-                        <td class="p-4 text-gray-300">2–3 Part 1 questions (focus on fluency, intonation)</td>
+                <tbody>
+                    <tr>
+                        <td>Monday</td>
+                        <td>2–3 Part 1 questions (focus on fluency, intonation)</td>
                     </tr>
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Tuesday" onclick="showDetails('Tuesday', '1 Part 2 card (record, listen, improve structure)', 'Choose one Part 2 cue card (e.g., Describe a memorable event). Speak for 1–2 minutes, record yourself, then listen to improve structure and coherence. Focus on clear introduction, body, and conclusion.')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Tuesday', this)"></td>
-                        <td class="p-4 text-white">Tuesday</td>
-                        <td class="p-4 text-gray-300">1 Part 2 card (record, listen, improve structure)</td>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>1 Part 2 card (record, listen, improve structure)</td>
                     </tr>
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Wednesday" onclick="showDetails('Wednesday', '2 Part 3 questions (develop deeper ideas)', 'Answer 2 Part 3 questions (e.g., Why do people enjoy traveling?). Focus on developing detailed ideas with examples and reasons. Aim for 40–50 seconds per answer.')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Wednesday', this)"></td>
-                        <td class="p-4 text-white">Wednesday</td>
-                        <td class="p-4 text-gray-300">2 Part 3 questions (develop deeper ideas)</td>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td>2 Part 3 questions (develop deeper ideas)</td>
                     </tr>
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Thursday" onclick="showDetails('Thursday', 'Mix of Part 1 + idioms or grammar practice', 'Practice 1–2 Part 1 questions and incorporate 2–3 idioms (e.g., “hit the nail on the head” for accuracy) or focus on grammar (e.g., complex sentences). Example: Describe your favorite book with idioms.')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Thursday', this)"></td>
-                        <td class="p-4 text-white">Thursday</td>
-                        <td class="p-4 text-gray-300">Mix of Part 1 + idioms or grammar practice</td>
+                    <tr>
+                        <td>Thursday</td>
+                        <td>Mix of Part 1 + idioms or grammar practice</td>
                     </tr>
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Friday" onclick="showDetails('Friday', 'Mock Speaking Test (full Part 1–2–3, time yourself or record)', 'Simulate a full IELTS Speaking test: 4–5 Part 1 questions, 1 Part 2 card, and 2–3 Part 3 questions. Time yourself (11–14 minutes total) or record to review fluency and coherence.')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Friday', this)"></td>
-                        <td class="p-4 text-white">Friday</td>
-                        <td class="p-4 text-gray-300">Mock Speaking Test (full Part 1–2–3, time yourself or record)</td>
+                    <tr>
+                        <td>Friday</td>
+                        <td>Mock Speaking Test (full Part 1–2–3, time yourself)</td>
                     </tr>
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Saturday" onclick="showDetails('Saturday', 'Review + fix grammar/vocab from your recordings', 'Listen to your week’s recordings. Note grammar mistakes (e.g., verb tenses) and weak vocabulary. Practice corrected versions and add 2–3 new words to your answers.')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Saturday', this)"></td>
-                        <td class="p-4 text-white">Saturday</td>
-                        <td class="p-4 text-gray-300">Review + fix grammar/vocab from your recordings</td>
+                    <tr>
+                        <td>Saturday</td>
+                        <td>Review + fix grammar/vocab from your recordings</td>
                     </tr>
-                    <tr class="day-card cursor-pointer border-b border-gray-700 bg-gray-800" data-day="Sunday" onclick="showDetails('Sunday', 'Chill day: watch interviews, mimic pronunciation', 'Relax and watch English interviews or TED Talks. Mimic native speakers’ pronunciation and intonation for 20–30 minutes to improve natural flow.')">
-                        <td class="p-4"><input type="checkbox" class="checkbox" onchange="markComplete('Sunday', this)"></td>
-                        <td class="p-4 text-white">Sunday</td>
-                        <td class="p-4 text-gray-300">Chill day: watch interviews, mimic pronunciation</td>
+                    <tr>
+                        <td>Sunday</td>
+                        <td>Chill day: watch interviews, mimic pronunciation</td>
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
 
-        <div id="details" class="mt-6 p-4 bg-gray-700 rounded-lg hidden">
-            <h2 id="dayTitle" class="text-2xl font-semibold text-white"></h2>
-            <p id="focusText" class="text-gray-200 mt-2"></p>
-            <p id="detailsText" class="text-gray-200 mt-2"></p>
-        </div>
+        <section id="daily-workouts">
+            <div class="day-card">
+                <h3>Monday: Part 1 Foundations</h3>
+                <p>Focus on fluency and natural intonation.</p>
+                <div class="interactive-area">
+                    <label>Today's Questions:</label>
+                    <textarea placeholder="e.g., What is your hometown like? Do you like reading?"></textarea>
+                </div>
+            </div>
 
-        <div class="mt-8 text-center">
-            <button onclick="resetWeek()" class="bg-gradient-to-r from-red-600 to-orange-500 text-white px-6 py-2 rounded-lg hover:from-red-700 hover:to-orange-600 transition">Reset Week</button>
-        </div>
-    </div>
+            <div class="day-card">
+                <h3>Tuesday: Part 2 Cue Card</h3>
+                <p>Record your response, then listen back to analyze structure and timing.</p>
+                <div class="interactive-area">
+                    <button class="record-btn">Start Recording</button>
+                    <label>Self-Analysis & Notes:</label>
+                    <textarea placeholder="e.g., Used 'um' too much. Good use of 'furthermore'. Need to extend the final part."></textarea>
+                </div>
+            </div>
 
-    <script>
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        
-        // Load completion status from localStorage
-        window.onload = function() {
-            days.forEach(day => {
-                const isCompleted = localStorage.getItem(`ielts_${day}`) === 'true';
-                const row = document.querySelector(`tr[data-day="${day}"]`);
-                const checkbox = row.querySelector('input[type="checkbox"]');
-                if (isCompleted) {
-                    row.classList.add('completed');
-                    checkbox.checked = true;
-                }
-            });
-            showNextDay();
-        };
+            <div class="day-card">
+                <h3>Wednesday: Part 3 Deep Dive</h3>
+                <p>Develop and structure well-reasoned arguments.</p>
+                 <div class="interactive-area">
+                    <label>Question 1:</label>
+                    <textarea placeholder="How has technology affected the way people communicate?"></textarea>
+                    <label>Question 2:</label>
+                    <textarea placeholder="Do you think traditional customs are losing their importance?"></textarea>
+                </div>
+            </div>
 
-        function showDetails(day, focus, details) {
-            document.getElementById('dayTitle').innerText = day;
-            document.getElementById('focusText').innerText = `Focus: ${focus}`;
-            document.getElementById('detailsText').innerText = `Details: ${details}`;
-            document.getElementById('details').classList.remove('hidden');
-        }
+            <div class="day-card">
+                <h3>Thursday: Polish & Practice</h3>
+                <p>Incorporate new idioms or focus on a specific grammar point.</p>
+                <div class="interactive-area">
+                    <label>Idiom / Grammar Focus:</label>
+                    <textarea placeholder="e.g., Idiom: 'Once in a blue moon'. Grammar: Using conditional sentences (If I were...)."></textarea>
+                </div>
+            </div>
 
-        function markComplete(day, checkbox) {
-            const row = document.querySelector(`tr[data-day="${day}"]`);
-            const audio = new Audio('https://www.soundjay.com/buttons/button-09.mp3');
-            audio.play().catch(error => console.log('Audio play failed:', error));
-            
-            if (checkbox.checked) {
-                row.classList.add('completed');
-                localStorage.setItem(`ielts_${day}`, 'true');
-                showNextDay();
-            } else {
-                row.classList.remove('completed');
-                localStorage.setItem(`ielts_${day}`, 'false');
-            }
-        }
+            <div class="day-card">
+                <h3>Friday: Mock Test Simulation</h3>
+                <p>Time yourself for a full Part 1, 2, and 3 test.</p>
+                <div class="interactive-area">
+                    <div class="timer">00:00</div>
+                    <button class="mock-test-btn">Begin Full Mock Test</button>
+                </div>
+            </div>
 
-        function showNextDay() {
-            const today = new Date().toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Bangkok' });
-            let nextDay = today;
-            for (let i = 0; i < days.length; i++) {
-                if (days[i] === today && localStorage.getItem(`ielts_${days[i]}`) === 'true') {
-                    nextDay = days[(i + 1) % days.length];
-                    break;
-                }
-            }
-            const row = document.querySelector(`tr[data-day="${nextDay}"]`);
-            if (row && !row.classList.contains('completed')) {
-                showDetails(nextDay, row.children[2].innerText, row.getAttribute('onclick').match(/'Details: (.*?)\)'/)[1]);
-            }
-        }
+            <div class="day-card">
+                <h3>Saturday: Review & Refine</h3>
+                <p>Analyze this week's recordings. Identify and correct recurring errors.</p>
+                <div class="interactive-area">
+                    <label>Grammar & Vocab Corrections:</label>
+                    <textarea placeholder="e.g., Mistake: 'informations' -> Correct: 'information'. Weak vocab: 'good' -> Better: 'beneficial', 'advantageous'."></textarea>
+                </div>
+            </div>
 
-        function resetWeek() {
-            days.forEach(day => {
-                localStorage.setItem(`ielts_${day}`, 'false');
-                const row = document.querySelector(`tr[data-day="${day}"]`);
-                row.classList.remove('completed');
-                row.querySelector('input[type="checkbox"]').checked = false;
-            });
-            document.getElementById('details').classList.add('hidden');
-            alert('Weekly plan reset! Start fresh on Monday.');
-            showDetails('Monday', '2–3 Part 1 questions (focus on fluency, intonation)', 'Answer 2–3 Part 1 questions (e.g., about hobbies, hometown, or studies). Focus on speaking smoothly with natural intonation. Practice for 15–30 seconds per answer. Try questions like: What do you do in your free time? or Where are you from?');
-        }
-    </script>
+            <div class="day-card">
+                <h3>Sunday: Active Listening</h3>
+                <p>Watch native speakers and mimic their pronunciation and rhythm.</p>
+                <div class="interactive-area">
+                     <p class="suggestion">Suggestion: Watch a TED Talk or an interview on YouTube and try to copy the speaker's intonation for a few sentences.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Keep practicing. Consistency is key to success.</p>
+    </footer>
 </body>
 </html>
