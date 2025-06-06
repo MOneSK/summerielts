@@ -16,20 +16,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveData = () => localStorage.setItem('ieltsWorkoutData', JSON.stringify(workoutData));
     const loadData = () => workoutData = JSON.parse(localStorage.getItem('ieltsWorkoutData') || '{}');
 
-    // --- Custom Notification Function ---
+    // --- UPDATED Custom Notification Function ---
     function showNotification(message) {
         clearTimeout(notificationTimeout);
+        
         notificationMessage.textContent = message;
-        notification.classList.remove('hidden');
+        
         const timerLine = notification.querySelector('.notification-timer-line');
-        if (timerLine) {
-            timerLine.style.animation = 'none';
-            timerLine.offsetHeight;
-            timerLine.style.animation = '';
-        }
+        
+        // Remove and re-add the 'running' class to restart the animation
+        timerLine.classList.remove('running');
+        void timerLine.offsetWidth; // This is a trick to force the browser to reflow the element
+        timerLine.classList.add('running');
+        
+        notification.classList.remove('hidden');
+
         notificationTimeout = setTimeout(() => {
             notification.classList.add('hidden');
-        }, 15000);
+        }, 15000); // 15 seconds
     }
 
     // --- Core Logic ---
@@ -44,17 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 else break;
             }
         }
-        
-        // This version creates the HTML and relies on the separate script to replace the emoji
-        const fireEmojiHTML = `<span ms-code-emoji="https://em-content.zobj.net/source/apple/419/fire_1f525.png">🔥</span>`;
-        const streakText = currentStreak === 1 ? `${fireEmojiHTML} 1 Day Streak` : `${fireEmojiHTML} ${currentStreak} Days Streak`;
-        
+        const streakText = currentStreak === 1 ? `🔥 1 Day Streak` : `🔥 ${currentStreak} Days Streak`;
         streakCounterDiv.innerHTML = streakText;
-        
-        // This calls the global function made available by the script in index.html
-        if (window.runEmojiReplacer) {
-            window.runEmojiReplacer();
-        }
+        if (window.runEmojiReplacer) window.runEmojiReplacer(streakCounterDiv);
     }
 
     function updateUI() {
@@ -77,12 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function showWorkout(day) {
         workoutCards.forEach(card => card.classList.add('hidden'));
         dayRows.forEach(row => row.classList.remove('active'));
-        const selectedCard = document.getElementById(day + '-card');
+        
         const selectedRow = document.querySelector(`tr[data-day="${day}"]`);
-        if (selectedCard && selectedRow) {
-            selectedCard.classList.remove('hidden');
-            selectedRow.classList.add('active');
-        }
+        if (selectedRow) selectedRow.classList.add('active');
+        
+        const selectedCard = document.getElementById(day + '-card');
+        if (selectedCard) selectedCard.classList.remove('hidden');
     }
 
     // --- Event Handlers ---
@@ -115,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Audio Recorder Logic with Error Handling ---
+    // --- Audio Recorder Logic (remains unchanged) ---
     document.querySelectorAll('.record-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const card = btn.closest('.day-card');
@@ -143,11 +139,10 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (err) {
                 showNotification("Could not access microphone. Please grant permission.");
                 console.error("Mic error:", err);
-                btn.disabled = false; 
+                btn.disabled = false;
             }
         });
     });
-
     document.querySelectorAll('.stop-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -157,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.closest('.day-card').querySelector('.record-btn').disabled = false;
         });
     });
-    
     document.querySelectorAll('.download-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const day = btn.closest('.day-card').querySelector('.record-btn').dataset.day;
@@ -165,10 +159,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const dateString = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
             const filename = `${day}-${dateString}.wav`;
             const a = document.createElement("a");
-            a.href = audioUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
+            a.href = audioUrl; a.download = filename;
+            document.body.appendChild(a); a.click();
             document.body.removeChild(a);
         });
     });
