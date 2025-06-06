@@ -13,6 +13,9 @@
     <header>
         <h1>IELTS Speaking Workout</h1>
         <p>Your weekly plan to achieve fluency and confidence. Click a day below to see the task.</p>
+        <div id="streak-counter">
+            🔥 <span id="current-streak">0</span> Day Streak
+        </div>
     </header>
 
     <main>
@@ -23,36 +26,44 @@
                     <tr>
                         <th>Day</th>
                         <th>Focus</th>
+                        <th>Done?</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr data-day="monday">
+                    <tr data-day="monday" data-day-index="1">
                         <td>Monday</td>
                         <td>2–3 Part 1 questions (focus on fluency, intonation)</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
-                    <tr data-day="tuesday">
+                    <tr data-day="tuesday" data-day-index="2">
                         <td>Tuesday</td>
                         <td>1 Part 2 card (record, listen, improve structure)</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
-                    <tr data-day="wednesday">
+                    <tr data-day="wednesday" data-day-index="3">
                         <td>Wednesday</td>
                         <td>2 Part 3 questions (develop deeper ideas)</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
-                    <tr data-day="thursday">
+                    <tr data-day="thursday" data-day-index="4">
                         <td>Thursday</td>
                         <td>Mix of Part 1 + idioms or grammar practice</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
-                    <tr data-day="friday">
+                    <tr data-day="friday" data-day-index="5">
                         <td>Friday</td>
                         <td>Mock Speaking Test (full Part 1–2–3, time yourself)</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
-                    <tr data-day="saturday">
+                    <tr data-day="saturday" data-day-index="6">
                         <td>Saturday</td>
                         <td>Review + fix grammar/vocab from your recordings</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
-                    <tr data-day="sunday">
+                    <tr data-day="sunday" data-day-index="0">
                         <td>Sunday</td>
                         <td>Chill day: watch interviews, mimic pronunciation</td>
+                        <td><div class="checkbox"></div></td>
                     </tr>
                 </tbody>
             </table>
@@ -63,6 +74,12 @@
                 <h3>Monday: Part 1 Foundations</h3>
                 <p>Focus on fluency and natural intonation.</p>
                 <div class="interactive-area">
+                    <div class="recorder-controls">
+                        <button class="record-btn" data-day="mon">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
                     <label>Today's Questions:</label>
                     <textarea placeholder="e.g., What is your hometown like? Do you like reading?"></textarea>
                 </div>
@@ -72,9 +89,14 @@
                 <h3>Tuesday: Part 2 Cue Card</h3>
                 <p>Record your response, then listen back to analyze structure and timing.</p>
                 <div class="interactive-area">
-                    <button class="record-btn">Start Recording</button>
+                    <div class="recorder-controls">
+                        <button class="record-btn" data-day="tue">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
                     <label>Self-Analysis & Notes:</label>
-                    <textarea placeholder="e.g., Used 'um' too much. Good use of 'furthermore'. Need to extend the final part."></textarea>
+                    <textarea placeholder="e.g., Used 'um' too much. Good use of 'furthermore'."></textarea>
                 </div>
             </div>
 
@@ -82,6 +104,12 @@
                 <h3>Wednesday: Part 3 Deep Dive</h3>
                 <p>Develop and structure well-reasoned arguments.</p>
                  <div class="interactive-area">
+                    <div class="recorder-controls">
+                        <button class="record-btn" data-day="wed">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
                     <label>Question 1:</label>
                     <textarea placeholder="How has technology affected the way people communicate?"></textarea>
                     <label>Question 2:</label>
@@ -93,17 +121,27 @@
                 <h3>Thursday: Polish & Practice</h3>
                 <p>Incorporate new idioms or focus on a specific grammar point.</p>
                 <div class="interactive-area">
+                    <div class="recorder-controls">
+                        <button class="record-btn" data-day="thu">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
                     <label>Idiom / Grammar Focus:</label>
-                    <textarea placeholder="e.g., Idiom: 'Once in a blue moon'. Grammar: Using conditional sentences (If I were...)."></textarea>
+                    <textarea placeholder="e.g., Idiom: 'Once in a blue moon'."></textarea>
                 </div>
             </div>
 
             <div id="friday-card" class="day-card hidden">
                 <h3>Friday: Mock Test Simulation</h3>
                 <p>Time yourself for a full Part 1, 2, and 3 test.</p>
-                <div class="interactive-area">
-                    <div class="timer">00:00</div>
-                    <button class="mock-test-btn">Begin Full Mock Test</button>
+                 <div class="interactive-area">
+                    <div class="recorder-controls">
+                        <button class="record-btn" data-day="fri">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
                 </div>
             </div>
 
@@ -111,8 +149,14 @@
                 <h3>Saturday: Review & Refine</h3>
                 <p>Analyze this week's recordings. Identify and correct recurring errors.</p>
                 <div class="interactive-area">
+                    <div class="recorder-controls">
+                        <button class="record-btn" data-day="sat">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
                     <label>Grammar & Vocab Corrections:</label>
-                    <textarea placeholder="e.g., Mistake: 'informations' -> Correct: 'information'. Weak vocab: 'good' -> Better: 'beneficial', 'advantageous'."></textarea>
+                    <textarea placeholder="e.g., Mistake: 'informations' -> Correct: 'information'."></textarea>
                 </div>
             </div>
 
@@ -120,7 +164,13 @@
                 <h3>Sunday: Active Listening</h3>
                 <p>Watch native speakers and mimic their pronunciation and rhythm.</p>
                 <div class="interactive-area">
-                     <p class="suggestion">Suggestion: Watch a TED Talk or an interview on YouTube and try to copy the speaker's intonation for a few sentences.</p>
+                     <div class="recorder-controls">
+                        <button class="record-btn" data-day="sun">🎤 Record</button>
+                        <button class="stop-btn" disabled>⏹️ Stop</button>
+                    </div>
+                    <audio controls class="audio-player"></audio>
+                    <button class="download-btn" disabled>⬇️ Download Audio</button>
+                     <p class="suggestion">Suggestion: Watch a TED Talk or an interview on YouTube.</p>
                 </div>
             </div>
         </section>
@@ -130,6 +180,7 @@
         <p>Keep practicing. Consistency is key to success.</p>
     </footer>
 
+    <audio id="tick-sound" src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAAAAACQUJDRElTSEE5OAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sA4gASG4f5EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAA//sA4gASG4f5EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAABEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVahncTEAAAAA6gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ=="></script>
     <script src="script.js"></script>
 </body>
 </html>
