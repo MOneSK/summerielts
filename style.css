@@ -7,6 +7,10 @@
     --gradient-end: #ff4b2b;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--font-color);
@@ -72,6 +76,22 @@ th {
     font-weight: 700;
 }
 
+/* NEW: Make table rows clickable */
+#weekly-recap tbody tr {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#weekly-recap tbody tr:hover {
+    background-color: #2a2a2a;
+}
+
+/* NEW: Style for the selected/active row */
+#weekly-recap tbody tr.active {
+    background-color: #333;
+}
+
+#weekly-recap tbody tr.active td:first-child,
 td:first-child {
     font-weight: 700;
     background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
@@ -79,13 +99,14 @@ td:first-child {
     -webkit-text-fill-color: transparent;
 }
 
+
 tbody tr:last-child td {
     border-bottom: none;
 }
 
 #daily-workouts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* We only show one card at a time, so grid isn't strictly needed, but it's fine to keep */
     gap: 20px;
 }
 
@@ -98,6 +119,12 @@ tbody tr:last-child td {
     display: flex;
     flex-direction: column;
 }
+
+/* NEW: Class to hide the cards */
+.day-card.hidden {
+    display: none;
+}
+
 
 .day-card h3 {
     margin-top: 0;
@@ -131,7 +158,7 @@ textarea {
     font-family: 'Roboto', sans-serif;
     min-height: 80px;
     resize: vertical;
-    box-sizing: border-box; /* Important for width */
+    box-sizing: border-box;
     margin-bottom: 10px;
 }
 
