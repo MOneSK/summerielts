@@ -16,24 +16,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveData = () => localStorage.setItem('ieltsWorkoutData', JSON.stringify(workoutData));
     const loadData = () => workoutData = JSON.parse(localStorage.getItem('ieltsWorkoutData') || '{}');
 
-    // --- UPDATED Custom Notification Function ---
     function showNotification(message) {
         clearTimeout(notificationTimeout);
-        
         notificationMessage.textContent = message;
-        
         const timerLine = notification.querySelector('.notification-timer-line');
-        
-        // Remove and re-add the 'running' class to restart the animation
         timerLine.classList.remove('running');
-        void timerLine.offsetWidth; // This is a trick to force the browser to reflow the element
+        void timerLine.offsetWidth;
         timerLine.classList.add('running');
-        
         notification.classList.remove('hidden');
-
         notificationTimeout = setTimeout(() => {
             notification.classList.add('hidden');
-        }, 15000); // 15 seconds
+        }, 15000);
     }
 
     // --- Core Logic ---
@@ -48,9 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 else break;
             }
         }
-        const streakText = currentStreak === 1 ? `🔥 1 Day Streak` : `🔥 ${currentStreak} Days Streak`;
+        const fireImageHTML = `<img src="https://em-content.zobj.net/source/apple/419/fire_1f525.png" style="height: 1.2em; width: auto; vertical-align: middle; margin-right: 0.2em;">`;
+        const streakText = currentStreak === 1 ? `${fireImageHTML} 1 Day Streak` : `${fireImageHTML} ${currentStreak} Days Streak`;
         streakCounterDiv.innerHTML = streakText;
-        if (window.runEmojiReplacer) window.runEmojiReplacer(streakCounterDiv);
     }
 
     function updateUI() {
@@ -73,10 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function showWorkout(day) {
         workoutCards.forEach(card => card.classList.add('hidden'));
         dayRows.forEach(row => row.classList.remove('active'));
-        
         const selectedRow = document.querySelector(`tr[data-day="${day}"]`);
         if (selectedRow) selectedRow.classList.add('active');
-        
         const selectedCard = document.getElementById(day + '-card');
         if (selectedCard) selectedCard.classList.remove('hidden');
     }
@@ -93,10 +84,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
             const todayDateString = getYYYYMMDD(today);
             const rowDateString = box.closest('tr').dataset.date;
+
+            // --- THIS IS THE UPDATED ALERT LOGIC ---
             if (rowDateString !== todayDateString) {
-                showNotification(`Hey man it's ${dayMapping[today.getDay()]}!!!`);
+                const dayName = dayMapping[today.getDay()].toUpperCase();
+                const styledDayName = dayName.slice(0, -1) + dayName.slice(-1).repeat(3); // e.g., FRIDAYYY
+                const message = `HEYYYY MANN, IT'S ${styledDayName}!!!`;
+                showNotification(message);
                 return;
             }
+
             if (box.classList.contains('checked')) return;
             box.classList.add('checked');
             if (tickSound) {
@@ -111,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Audio Recorder Logic (remains unchanged) ---
+    // --- Audio Recorder Logic ---
     document.querySelectorAll('.record-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const card = btn.closest('.day-card');
@@ -143,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
     document.querySelectorAll('.stop-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -152,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.closest('.day-card').querySelector('.record-btn').disabled = false;
         });
     });
+    
     document.querySelectorAll('.download-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const day = btn.closest('.day-card').querySelector('.record-btn').dataset.day;
@@ -168,4 +167,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Initial Load ---
     loadData();
     updateUI();
+    // Use a small timeout to ensure static emojis are rendered before trying to replace them
+    setTimeout(() => {
+        if (window.runEmojiReplacer) {
+            runEmojiReplacer();
+        }
+    }, 100);
 });

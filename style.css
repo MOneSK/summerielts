@@ -90,12 +90,9 @@ th {
 #weekly-recap tbody tr:hover {
     background-color: #2a2a2a;
 }
-
-/* NEW: Highlight for the current day's row */
 #weekly-recap tbody tr.active {
-    background-color: #383838; /* A brighter gray to make it stand out */
+    background-color: #383838;
 }
-
 #weekly-recap tbody tr.active td:first-child,
 td:first-child {
     font-weight: 700;
@@ -192,37 +189,46 @@ button:disabled { background: #555; cursor: not-allowed; transform: none; }
 footer { text-align: center; margin-top: 50px; color: #a0a0a0; font-style: italic; }
 
 
-/* --- Custom Notification Styles --- */
+/* --- FINAL Custom Notification Styles --- */
 #custom-notification {
     position: fixed;
-    top: 20px;
+    top: 20px; /* Places the box at the top of the screen */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); /* Horizontally centers the box */
+    
+    /* Flexbox properties to center the CONTENT inside the box */
+    display: flex;
+    justify-content: center; /* Horizontal centering for flex items */
+    align-items: center;     /* Vertical centering for flex items */
+
     background-color: #201c1c;
     color: #f0f0f0;
-    padding: 16px 24px;
+    min-height: 85px; /* Give it a minimum height */
+    padding: 10px 28px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     border: 1px solid #444;
     width: 90%;
-    max-width: 400px;
-    text-align: center;
-    font-size: 1.1em;
+    max-width: 450px;
+    font-size: 1.3em;
+    font-weight: 700;
+    box-sizing: border-box;
     opacity: 1;
     visibility: visible;
     transition: opacity 0.5s ease, visibility 0.5s ease, top 0.5s ease;
     overflow: hidden; 
 }
+
 #custom-notification.hidden {
     opacity: 0;
     visibility: hidden;
-    top: -100px;
+    top: -100px; /* Hides it above the screen for a fly-out effect */
 }
+
 #notification-message {
     margin: 0;
-    padding: 0;
-    margin-bottom: 12px;
+    padding-bottom: 12px; /* Add padding to keep text off the timer line */
 }
 
 .notification-timer-line {
@@ -230,13 +236,12 @@ footer { text-align: center; margin-top: 50px; color: #a0a0a0; font-style: itali
     bottom: 0;
     left: 0;
     height: 4px;
-    width: 0; /* The animation will start it at 100% */
+    width: 0;
     background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
 }
 
-/* NEW: Animation is now applied via a class for better control */
 .notification-timer-line.running {
-    animation: shrink 15s linear forwards;
+    animation: shrink 3.5s linear forwards;
 }
 
 @keyframes shrink {
