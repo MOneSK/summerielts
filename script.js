@@ -16,25 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveData = () => localStorage.setItem('ieltsWorkoutData', JSON.stringify(workoutData));
     const loadData = () => workoutData = JSON.parse(localStorage.getItem('ieltsWorkoutData') || '{}');
 
-    // --- NEW: Emoji Replacer Logic is now inside the main script ---
-    function runEmojiReplacer(scope) {
-        const elements = (scope || document).querySelectorAll('[ms-code-emoji]');
-        elements.forEach(element => {
-            if (element.querySelector('img')) { return; } // Don't replace if already an image
-            var imageUrl = element.getAttribute('ms-code-emoji');
-            var img = document.createElement('img');
-            img.src = imageUrl;
-            var textStyle = window.getComputedStyle(element);
-            var adjustedHeight = parseFloat(textStyle.fontSize) * 1.2;
-            img.style.height = adjustedHeight + 'px';
-            img.style.width = 'auto';
-            img.style.verticalAlign = 'middle';
-            img.style.marginRight = '0.2em';
-            element.innerHTML = ''; // Clears the text emoji
-            element.appendChild(img);
-        });
-    }
-
     // --- Custom Notification Function ---
     function showNotification(message) {
         clearTimeout(notificationTimeout);
@@ -64,14 +45,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Use the correct fire emoji URL and structure for the replacer script
+        // This version creates the HTML and relies on the separate script to replace the emoji
         const fireEmojiHTML = `<span ms-code-emoji="https://em-content.zobj.net/source/apple/419/fire_1f525.png">🔥</span>`;
         const streakText = currentStreak === 1 ? `${fireEmojiHTML} 1 Day Streak` : `${fireEmojiHTML} ${currentStreak} Days Streak`;
         
         streakCounterDiv.innerHTML = streakText;
         
-        // IMPORTANT: Run the replacer on the streak counter AFTER its content has been updated
-        runEmojiReplacer(streakCounterDiv);
+        // This calls the global function made available by the script in index.html
+        if (window.runEmojiReplacer) {
+            window.runEmojiReplacer();
+        }
     }
 
     function updateUI() {
@@ -132,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Audio Recorder Logic ---
+    // --- Audio Recorder Logic with Error Handling ---
     document.querySelectorAll('.record-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const card = btn.closest('.day-card');
@@ -160,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (err) {
                 showNotification("Could not access microphone. Please grant permission.");
                 console.error("Mic error:", err);
-                btn.disabled = false;
+                btn.disabled = false; 
             }
         });
     });
@@ -193,6 +176,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Initial Load ---
     loadData();
     updateUI();
-    // Run for all static emojis on the page when it first loads
-    runEmojiReplacer(); 
 });
