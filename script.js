@@ -4,84 +4,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const workoutCards = document.querySelectorAll('.day-card');
     const tickSound = document.getElementById('tick-sound');
     const streakCounterDiv = document.getElementById('streak-counter');
+    const notification = document.getElementById('custom-notification');
+    const notificationMessage = document.getElementById('notification-message');
 
     // --- State and Data ---
-    let mediaRecorder;
-    let audioChunks = [];
-    let audioUrl;
-    let workoutData = {};
+    let mediaRecorder, audioChunks = [], audioUrl, workoutData = {}, notificationTimeout;
     const dayMapping = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+    // --- Helper Functions ---
+    const getYYYYMMDD = date => date.toISOString().split('T')[0];
+    const saveData = () => localStorage.setItem('ieltsWorkoutData', JSON.stringify(workoutData));
+    const loadData = () => workoutData = JSON.parse(localStorage.getItem('ieltsWorkoutData') || '{}');
 
-    // --- Date Formatting Helper ---
-    function getYYYYMMDD(date) {
-        return date.toISOString().split('T')[0];
+    // --- Custom Notification Function ---
+    function showNotification(message) {
+        clearTimeout(notificationTimeout);
+        notificationMessage.textContent = message;
+        notification.classList.remove('hidden');
+        const timerLine = notification.querySelector('.notification-timer-line');
+        timerLine.style.animation = 'none';
+        timerLine.offsetHeight;
+        timerLine.style.animation = '';
+        notificationTimeout = setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 15000);
     }
 
-    // --- Data Persistence Functions ---
-    function saveData() {
-        localStorage.setItem('ieltsWorkoutData', JSON.stringify(workoutData));
-    }
-
-    function loadData() {
-        const data = localStorage.getItem('ieltsWorkoutData');
-        workoutData = data ? JSON.parse(data) : {};
-    }
-
-    // --- Streak Calculation (with updated text for emoji script) ---
+    // --- Core Logic ---
     function calculateStreak() {
         let currentStreak = 0;
         let today = new Date();
-        
         if (workoutData[getYYYYMMDD(today)]) {
             for (let i = 0; i < 365 * 5; i++) {
                 let dateToCheck = new Date();
                 dateToCheck.setDate(today.getDate() - i);
-                const dateKey = getYYYYMMDD(dateToCheck);
-                if (workoutData[dateKey]) {
-                    currentStreak++;
-                } else {
-                    break;
-                }
+                if (workoutData[getYYYYMMDD(dateToCheck)]) currentStreak++;
+                else break;
             }
         }
-        
-        // NEW: Generate HTML with the span for the emoji script to target
-        let streakText;
-        const fireEmojiHTML = `<span ms-code-emoji="https://em-content.zobj.net/source/apple/419/fire_1f525.png">🔥</span>`;
-
-        if (currentStreak === 1) {
-            streakText = `${fireEmojiHTML} 1 Day Streak`;
-        } else {
-            streakText = `${fireEmojiHTML} ${currentStreak} Days Streak`;
-        }
+        const streakText = currentStreak === 1 ? `🔥 1 Day Streak` : `🔥 ${currentStreak} Days Streak`;
         streakCounterDiv.innerHTML = streakText;
-        
-        // After setting the HTML, we need to run the emoji replacer for this dynamic element
-        runEmojiReplacer(streakCounterDiv);
+        if (window.runEmojiReplacer) window.runEmojiReplacer(streakCounterDiv);
     }
 
-    // --- UI Update Functions ---
     function updateUI() {
         const today = new Date();
         const currentDayIndex = today.getDay();
-
         dayRows.forEach(row => {
             const rowDayIndex = parseInt(row.dataset.dayIndex, 10);
             let dateForRow = new Date(today);
             dateForRow.setDate(today.getDate() - (currentDayIndex - rowDayIndex));
-            
             const dateKey = getYYYYMMDD(dateForRow);
-            row.dataset.date = dateKey; 
-
+            row.dataset.date = dateKey;
             const checkbox = row.querySelector('.checkbox');
-            if (workoutData[dateKey]) {
-                checkbox.classList.add('checked');
-            } else {
-                checkbox.classList.remove('checked');
-            }
+            checkbox.classList.toggle('checked', !!workoutData[dateKey]);
         });
-        
         const dayName = dayMapping[currentDayIndex].toLowerCase();
         showWorkout(dayName);
         calculateStreak();
@@ -90,68 +67,36 @@ document.addEventListener('DOMContentLoaded', function() {
     function showWorkout(day) {
         workoutCards.forEach(card => card.classList.add('hidden'));
         dayRows.forEach(row => row.classList.remove('active'));
-
         const selectedCard = document.getElementById(day + '-card');
         const selectedRow = document.querySelector(`tr[data-day="${day}"]`);
-
         if (selectedCard && selectedRow) {
             selectedCard.classList.remove('hidden');
             selectedRow.classList.add('active');
         }
     }
-    
-    // --- Emoji Replacer Function ---
-    // We put your script logic into a function so we can call it on dynamic content
-    function runEmojiReplacer(scope) {
-        const elements = (scope || document).querySelectorAll('[ms-code-emoji]');
-        elements.forEach(element => {
-            // Check if it has already been replaced
-            if (element.querySelector('img')) {
-                return;
-            }
-            var imageUrl = element.getAttribute('ms-code-emoji');
-            var img = document.createElement('img');
-            img.src = imageUrl;
-
-            var textStyle = window.getComputedStyle(element);
-            var adjustedHeight = parseFloat(textStyle.fontSize) * 1.2;
-
-            img.style.height = adjustedHeight + 'px';
-            img.style.width = 'auto';
-            img.style.verticalAlign = 'middle';
-            img.style.marginRight = '0.2em';
-
-            element.innerHTML = ''; // Clears the text emoji
-            element.appendChild(img);
-        });
-    }
 
     // --- Event Handlers ---
+    dayRows.forEach(row => {
+        row.addEventListener('click', e => {
+            if (!e.target.closest('.checkbox')) showWorkout(row.dataset.day);
+        });
+    });
+
     document.querySelectorAll('.checkbox').forEach(box => {
         box.addEventListener('click', () => {
             const today = new Date();
             const todayDateString = getYYYYMMDD(today);
             const rowDateString = box.closest('tr').dataset.date;
-
             if (rowDateString !== todayDateString) {
-                const currentDayName = dayMapping[today.getDay()];
-                alert(`Hey man it's ${currentDayName}!!!`);
+                showNotification(`Hey man it's ${dayMapping[today.getDay()]}!!!`);
                 return;
             }
-            if (box.classList.contains('checked')) {
-                return;
-            }
-            
+            if (box.classList.contains('checked')) return;
             box.classList.add('checked');
-            
             if (tickSound) {
                 const playPromise = tickSound.play();
                 if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        tickSound.currentTime = 0;
-                    }).catch(error => {
-                        console.log("Autoplay prevented: ", error);
-                    });
+                    playPromise.then(() => tickSound.currentTime = 0).catch(err => console.error("Audio playback error:", err));
                 }
             }
             workoutData[rowDateString] = true;
@@ -159,11 +104,68 @@ document.addEventListener('DOMContentLoaded', function() {
             calculateStreak();
         });
     });
+
+    // --- THIS ENTIRE BLOCK WAS MISSING ---
+    // --- Audio Recorder Logic ---
+    document.querySelectorAll('.record-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const card = btn.closest('.day-card');
+            const stopBtn = card.querySelector('.stop-btn');
+            const player = card.querySelector('.audio-player');
+            const downloadBtn = card.querySelector('.download-btn');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                audioChunks = [];
+                btn.disabled = true;
+                stopBtn.disabled = false;
+                player.style.display = 'none';
+                downloadBtn.disabled = true;
+                mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    audioUrl = URL.createObjectURL(audioBlob);
+                    player.src = audioUrl;
+                    player.style.display = 'block';
+                    downloadBtn.disabled = false;
+                    stream.getTracks().forEach(track => track.stop());
+                });
+            } catch (err) {
+                showNotification("Could not access microphone. Please grant permission.");
+                console.error("Mic error:", err);
+                btn.disabled = false; // Re-enable button if permission denied
+            }
+        });
+    });
+
+    document.querySelectorAll('.stop-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            btn.disabled = true;
+            btn.closest('.day-card').querySelector('.record-btn').disabled = false;
+        });
+    });
     
-    // Other event handlers remain the same...
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const day = btn.closest('.day-card').querySelector('.record-btn').dataset.day;
+            const today = new Date();
+            const dateString = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+            const filename = `${day}-${dateString}.wav`;
+            const a = document.createElement("a");
+            a.href = audioUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+    });
+    // --- END OF MISSING BLOCK ---
 
     // --- Initial Load ---
     loadData();
     updateUI();
-    runEmojiReplacer(); // Run for all static emojis on page load
 });
