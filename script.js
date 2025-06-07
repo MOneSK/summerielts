@@ -9,12 +9,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- State and Data ---
     let mediaRecorder, audioChunks = [], audioUrl, workoutData = {}, notificationTimeout;
+    let audioBlob;
     const dayMapping = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     // --- Helper Functions ---
-    const getYYYYMMDD = date => date.toISOString().split('T')[0];
+    // NEW: Corrected function that respects local timezone
+    function getYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     const saveData = () => localStorage.setItem('ieltsWorkoutData', JSON.stringify(workoutData));
     const loadData = () => workoutData = JSON.parse(localStorage.getItem('ieltsWorkoutData') || '{}');
+
+    function runEmojiReplacer(scope) {
+        const elements = (scope || document).querySelectorAll('[ms-code-emoji]');
+        elements.forEach(element => {
+            if (element.querySelector('img')) { return; }
+            var imageUrl = element.getAttribute('ms-code-emoji');
+            var img = document.createElement('img');
+            img.src = imageUrl;
+            var textStyle = window.getComputedStyle(element);
+            var adjustedHeight = parseFloat(textStyle.fontSize) * 1.2;
+            img.style.height = adjustedHeight + 'px';
+            img.style.width = 'auto';
+            img.style.verticalAlign = 'middle';
+            img.style.marginRight = '0.2em';
+            element.innerHTML = '';
+            element.appendChild(img);
+        });
+    }
 
     function showNotification(message) {
         clearTimeout(notificationTimeout);
@@ -84,23 +110,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
             const todayDateString = getYYYYMMDD(today);
             const rowDateString = box.closest('tr').dataset.date;
-
-            // --- THIS IS THE UPDATED ALERT LOGIC ---
             if (rowDateString !== todayDateString) {
                 const dayName = dayMapping[today.getDay()].toUpperCase();
-                const styledDayName = dayName.slice(0, -1) + dayName.slice(-1).repeat(3); // e.g., FRIDAYYY
+                const styledDayName = dayName.slice(0, -1) + dayName.slice(-1).repeat(3);
                 const message = `HEYYYY MANN, IT'S ${styledDayName}!!!`;
                 showNotification(message);
                 return;
             }
-
             if (box.classList.contains('checked')) return;
             box.classList.add('checked');
             if (tickSound) {
-                const playPromise = tickSound.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => tickSound.currentTime = 0).catch(err => console.error("Audio playback error:", err));
-                }
+                tickSound.play().then(() => tickSound.currentTime = 0).catch(err => console.error(err));
             }
             workoutData[rowDateString] = true;
             saveData();
@@ -126,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 downloadBtn.disabled = true;
                 mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
                 mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                     audioUrl = URL.createObjectURL(audioBlob);
                     player.src = audioUrl;
                     player.style.display = 'block';
@@ -143,34 +163,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.stop-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
             btn.disabled = true;
             btn.closest('.day-card').querySelector('.record-btn').disabled = false;
         });
     });
     
     document.querySelectorAll('.download-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const day = btn.closest('.day-card').querySelector('.record-btn').dataset.day;
-            const today = new Date();
-            const dateString = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
-            const filename = `${day}-${dateString}.wav`;
-            const a = document.createElement("a");
-            a.href = audioUrl; a.download = filename;
-            document.body.appendChild(a); a.click();
-            document.body.removeChild(a);
+        btn.addEventListener('click', async () => {
+            if (!audioBlob) return;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = "Encoding to MP3...";
+            try {
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(audioBlob);
+                reader.onloadend = () => {
+                    const buffer = reader.result;
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    audioCtx.decodeAudioData(buffer, (audioBuffer) => {
+                        const pcmData = audioBuffer.getChannelData(0);
+                        const sampleRate = audioBuffer.sampleRate;
+                        const mp3Encoder = new lamejs.Mp3Encoder(1, sampleRate, 128);
+                        const samples = new Int16Array(pcmData.length);
+                        for (let i = 0; i < pcmData.length; i++) {
+                            samples[i] = pcmData[i] * 32767.5;
+                        }
+                        const mp3Data = [];
+                        const sampleBlockSize = 1152;
+                        for (let i = 0; i < samples.length; i += sampleBlockSize) {
+                            const sampleChunk = samples.subarray(i, i + sampleBlockSize);
+                            const mp3buf = mp3Encoder.encodeBuffer(sampleChunk);
+                            if (mp3buf.length > 0) mp3Data.push(new Int8Array(mp3buf));
+                        }
+                        const mp3buf = mp3Encoder.flush();
+                        if (mp3buf.length > 0) mp3Data.push(new Int8Array(mp3buf));
+                        const mp3Blob = new Blob(mp3Data, { type: 'audio/mpeg' });
+                        const day = btn.closest('.day-card').querySelector('.record-btn').dataset.day;
+                        const today = new Date();
+                        const dateString = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+                        const filename = `${day}-${dateString}.mp3`;
+                        const a = document.createElement("a");
+                        a.href = URL.createObjectURL(mp3Blob);
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    });
+                };
+            } catch (err) {
+                showNotification("Failed to encode MP3.");
+                console.error("MP3 encoding error:", err);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         });
     });
 
     // --- Initial Load ---
     loadData();
     updateUI();
-    // Use a small timeout to ensure static emojis are rendered before trying to replace them
-    setTimeout(() => {
-        if (window.runEmojiReplacer) {
-            runEmojiReplacer();
-        }
-    }, 100);
+    runEmojiReplacer();
 });
