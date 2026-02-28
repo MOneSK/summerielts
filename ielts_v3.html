@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS Prep — July 21</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@400;500;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e0f13; --bg2:#141619; --surface:#1a1c22; --surface2:#22252d;
+  --border:#2c2f3a; --ink:#edeaf3; --muted:#6b6e80; --dimmed:#3a3d4a;
+  --R:#e05555; --W:#4f8ef7; --L:#3ec98a; --S:#f0a340;
+  --streak:#ff5a1f; --gold:#d4a017;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Cabinet Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0;}
+.wrap{max-width:1060px;margin:0 auto;padding:44px 20px 80px;position:relative;z-index:1;}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;margin-bottom:40px;animation:up .6s ease both;}
+@media(max-width:560px){.hero{grid-template-columns:1fr;}}
+.eyebrow{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+h1{font-family:'Clash Display',sans-serif;font-size:clamp(32px,6vw,64px);font-weight:700;line-height:.95;letter-spacing:-.03em;}
+h1 em{font-style:normal;color:var(--streak);}
+.hero-sub{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.65;max-width:360px;}
+.clock-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 28px;text-align:center;min-width:180px;box-shadow:0 0 40px rgba(255,90,31,.07);}
+.clock-num{font-family:'Clash Display',sans-serif;font-size:58px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--streak);}
+.clock-label{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.2em;color:var(--muted);margin-top:4px;text-transform:uppercase;}
+.exam-chip{display:inline-block;margin-top:10px;background:rgba(255,90,31,.12);color:var(--streak);font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.08em;padding:4px 12px;border-radius:20px;}
+
+/* PHASE BANNER — auto detected */
+.phase-banner{border-radius:12px;padding:14px 20px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;animation:up .6s .06s ease both;}
+.pb-left{display:flex;align-items:center;gap:14px;}
+.pb-icon{font-size:24px;}
+.pb-name{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:600;}
+.pb-range{font-family:'Fira Code',monospace;font-size:10px;color:var(--muted);margin-top:2px;}
+.pb-goal{font-size:12px;color:var(--muted);max-width:420px;line-height:1.6;}
+.pb-badge{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.1em;padding:5px 14px;border-radius:20px;font-weight:600;}
+
+/* STREAK */
+.streak-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px;animation:up .6s .1s ease both;}
+.streak-left{display:flex;align-items:center;gap:14px;}
+.s-fire{font-size:30px;animation:bob 2.2s infinite;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.s-num{font-family:'Clash Display',sans-serif;font-size:42px;font-weight:700;color:var(--streak);line-height:1;}
+.s-meta strong{color:var(--ink);font-size:14px;display:block;}
+.s-meta span{color:var(--muted);font-size:11px;}
+.dot-row{display:flex;gap:5px;flex-wrap:wrap;max-width:380px;}
+.sdot{width:20px;height:20px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);transition:all .2s;cursor:default;}
+.sdot.done{background:var(--streak);border-color:var(--streak);box-shadow:0 0 6px rgba(255,90,31,.4);}
+.sdot.today{border-color:var(--streak);box-shadow:0 0 0 2px rgba(255,90,31,.25);}
+
+/* SEC LABEL */
+.sec{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.sec::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* TODAY + TOMORROW CARDS */
+.day-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;animation:up .6s .14s ease both;}
+@media(max-width:620px){.day-grid{grid-template-columns:1fr;}}
+
+.today-card{border-radius:14px;padding:22px;border:1px solid var(--border);position:relative;overflow:hidden;}
+.today-card.featured{background:var(--surface);}
+.today-card.preview{background:var(--bg2);opacity:.85;}
+.tc-eyebrow{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.tc-skill{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.tc-icon{font-size:28px;}
+.tc-name{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;}
+.tc-tagline{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+.tc-time{font-family:'Fira Code',monospace;font-size:11px;color:var(--muted);}
+.tc-time strong{color:var(--ink);}
+.tc-accent{position:absolute;top:0;right:0;width:80px;height:80px;border-radius:0 14px 0 100%;opacity:.08;}
+
+/* CHECKLIST */
+.checklist-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:32px;animation:up .6s .18s ease both;}
+.cl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:10px;}
+.cl-head h2{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:600;}
+.day-chip{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.1em;padding:4px 14px;border-radius:20px;color:#fff;}
+.cl-subtitle{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+.cl-subtitle strong{color:var(--ink);}
+
+.cl-section{margin-bottom:20px;}
+.cl-section-title{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.cl-dot{width:7px;height:7px;border-radius:50%;background:var(--gc);flex-shrink:0;}
+
+.ci{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ci:last-child{border-bottom:none;}
+.cibox{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;background:var(--bg2);transition:all .15s;}
+.ci.done .cibox{background:var(--L);border-color:var(--L);color:#fff;}
+.ci-text{font-size:12px;color:var(--ink);line-height:1.5;}
+.ci-diff{font-size:9px;font-family:'Fira Code',monospace;color:var(--muted);margin-top:2px;}
+.ci.done .ci-text{color:var(--muted);text-decoration:line-through;}
+
+.prog-bg{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:18px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--L),#60e8a4);width:0%;transition:width .4s ease;border-radius:3px;}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-top:7px;}
+.prog-txt{font-family:'Fira Code',monospace;font-size:10px;color:var(--muted);}
+.prog-pct{font-family:'Fira Code',monospace;font-size:11px;color:var(--L);font-weight:500;}
+
+/* SKILL CARDS */
+.skill-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px;animation:up .6s .22s ease both;}
+@media(max-width:680px){.skill-row{grid-template-columns:repeat(2,1fr);}}
+.sk{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;}
+.sk:hover{transform:translateY(-3px);border-color:var(--c);}
+.sk::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--c);}
+.sk-icon{font-size:18px;margin-bottom:7px;}
+.sk-name{font-family:'Clash Display',sans-serif;font-size:13px;font-weight:600;color:var(--c);margin-bottom:3px;}
+.sk-day{font-family:'Fira Code',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+
+/* WEEKLY VIEW */
+.week-table{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px;animation:up .6s .26s ease both;}
+.tr{display:grid;grid-template-columns:90px 120px 1fr 80px;border-bottom:1px solid var(--border);min-height:50px;}
+.tr:last-child{border-bottom:none;}
+.tr.thead{background:var(--surface2);font-family:'Fira Code',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.tr.active-day{background:rgba(255,90,31,.04);border-left:3px solid var(--streak);}
+.td{padding:11px 14px;border-right:1px solid var(--border);font-size:11.5px;line-height:1.5;display:flex;align-items:center;}
+.td:last-child{border-right:none;}
+.td.day{font-family:'Fira Code',monospace;font-size:10px;color:var(--muted);flex-direction:column;align-items:flex-start;gap:1px;}
+.td.day strong{color:var(--ink);font-size:12px;}
+.td.focus{align-items:flex-start;padding-top:13px;}
+.td.time{color:var(--muted);font-size:11px;justify-content:center;}
+.tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.tag.R{background:rgba(224,85,85,.15);color:var(--R);}
+.tag.W{background:rgba(79,142,247,.15);color:var(--W);}
+.tag.L{background:rgba(62,201,138,.15);color:var(--L);}
+.tag.S{background:rgba(240,163,64,.15);color:var(--S);}
+.tag.rest{background:rgba(107,110,128,.15);color:var(--muted);}
+.tag.mock{background:rgba(212,160,23,.15);color:var(--gold);}
+.task-txt{font-size:11.5px;color:var(--ink);}
+.hint-txt{font-size:10px;color:var(--muted);margin-top:2px;}
+.today-label{font-size:9px;color:var(--streak);font-family:'Fira Code',monospace;letter-spacing:.1em;margin-top:2px;}
+
+/* TIPS */
+.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px;animation:up .6s .3s ease both;}
+@media(max-width:600px){.tips-grid{grid-template-columns:1fr;}}
+.tip{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.tip h4{font-family:'Clash Display',sans-serif;font-size:13px;font-weight:600;margin-bottom:5px;}
+.tip p{font-size:11px;color:var(--muted);line-height:1.65;}
+
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(max-width:640px){.tr{grid-template-columns:72px 100px 1fr;}.tr .td:last-child,.tr.thead .td:last-child{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div>
+    <div class="eyebrow">// IELTS Prep · One skill. One day.</div>
+    <h1>Study.<br>Practice.<br><em>Ace it.</em></h1>
+    <div class="hero-sub">Built around your real life — school included. One skill per day, 45–60 min max.</div>
+  </div>
+  <div class="clock-box">
+    <div class="clock-num" id="countdown-num">—</div>
+    <div class="clock-label">days to go</div>
+    <div class="exam-chip">📅 Jul 21, 2026</div>
+  </div>
+</div>
+
+<!-- AUTO PHASE BANNER -->
+<div class="phase-banner" id="phase-banner">
+  <div class="pb-left">
+    <div class="pb-icon" id="pb-icon">📘</div>
+    <div>
+      <div class="pb-name" id="pb-name">—</div>
+      <div class="pb-range" id="pb-range">—</div>
+      <div class="pb-goal" id="pb-goal">—</div>
+    </div>
+  </div>
+  <div class="pb-badge" id="pb-badge">—</div>
+</div>
+
+<!-- STREAK -->
+<div class="streak-wrap">
+  <div class="streak-left">
+    <div class="s-fire">🔥</div>
+    <div>
+      <div class="s-num" id="streak-num">0</div>
+      <div class="s-meta">
+        <strong>Day Streak</strong>
+        <span>Complete today's checklist to keep it alive</span>
+      </div>
+    </div>
+  </div>
+  <div class="dot-row" id="dot-row"></div>
+</div>
+
+<!-- TODAY + TOMORROW -->
+<div class="sec">today & tomorrow</div>
+<div class="day-grid">
+  <div class="today-card featured" id="today-card">
+    <div class="tc-eyebrow">TODAY — <span id="today-dayname">—</span></div>
+    <div class="tc-skill">
+      <div class="tc-icon" id="today-icon">—</div>
+      <div class="tc-name" id="today-skill">—</div>
+    </div>
+    <div class="tc-tagline" id="today-tagline">—</div>
+    <div class="tc-time" id="today-time">—</div>
+    <div class="tc-accent" id="today-accent"></div>
+  </div>
+  <div class="today-card preview" id="tomorrow-card">
+    <div class="tc-eyebrow">TOMORROW — <span id="tmr-dayname">—</span></div>
+    <div class="tc-skill">
+      <div class="tc-icon" id="tmr-icon">—</div>
+      <div class="tc-name" id="tmr-skill">—</div>
+    </div>
+    <div class="tc-tagline" id="tmr-tagline">—</div>
+    <div class="tc-time" id="tmr-time">—</div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div class="sec">4 skills · rotating daily</div>
+<div class="skill-row">
+  <div class="sk" style="--c:var(--R)"><div class="sk-icon">📖</div><div class="sk-name">Reading</div><div class="sk-day">Tue · Fri</div></div>
+  <div class="sk" style="--c:var(--W)"><div class="sk-icon">✍️</div><div class="sk-name">Writing</div><div class="sk-day">Mon · Thu</div></div>
+  <div class="sk" style="--c:var(--L)"><div class="sk-icon">🎧</div><div class="sk-name">Listening</div><div class="sk-day">Wed · Sat</div></div>
+  <div class="sk" style="--c:var(--S)"><div class="sk-icon">🗣️</div><div class="sk-name">Speaking</div><div class="sk-day">Tue · Thu</div></div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="sec">today's checklist · <span id="checklist-skill-label" style="color:var(--ink)">—</span></div>
+<div class="checklist-card">
+  <div class="cl-head">
+    <h2 id="cl-title">Daily Tasks</h2>
+    <div class="day-chip" id="day-chip" style="background:var(--streak)">—</div>
+  </div>
+  <div class="cl-subtitle" id="cl-subtitle">—</div>
+  <div id="cl-sections"></div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+  <div class="prog-row">
+    <div class="prog-txt" id="prog-txt">0 / 0 complete</div>
+    <div class="prog-pct" id="prog-pct">0%</div>
+  </div>
+</div>
+
+<!-- THIS WEEK -->
+<div class="sec">this week at a glance</div>
+<div class="week-table" id="week-table"></div>
+
+<!-- TIPS -->
+<div class="sec">tips that actually help</div>
+<div class="tips-grid">
+  <div class="tip"><h4 style="color:var(--R)">📖 Reading first</h4><p>Read the questions before the passage. You're not reading — you're hunting. Scan for keywords.</p></div>
+  <div class="tip"><h4 style="color:var(--W)">✍️ Task 2 formula</h4><p>Hook → Position → Body 1 (claim + example) → Body 2 → Conclusion. Never skip the overview in Task 1.</p></div>
+  <div class="tip"><h4 style="color:var(--L)">🎧 Listening prep</h4><p>Use the 30-second gaps to read ahead and predict answers. Spelling counts — check it.</p></div>
+  <div class="tip"><h4 style="color:var(--S)">🗣️ Speaking recovery</h4><p>Mistakes are fine. Correct yourself naturally and keep going. Examiners reward fluency, not perfection.</p></div>
+  <div class="tip"><h4 style="color:var(--streak)">🔥 Streak mindset</h4><p>On brutal school days, 20 minutes still counts. Showing up is the real skill you're training.</p></div>
+  <div class="tip"><h4 style="color:var(--gold)">📅 Exam day</h4><p>Arrive 30 min early. Bring passport/ID. Don't review notes in the morning — trust your prep.</p></div>
+</div>
+
+</div>
+<script>
+// ─────────────────────────────────────────────
+// CORE DATA
+// ─────────────────────────────────────────────
+
+const EXAM_DATE = new Date('2026-07-21T00:00:00');
+const START_DATE = new Date('2026-03-01T00:00:00');
+
+// Phase definitions
+const PHASES = [
+  {
+    id:1, name:'Phase 1 — Foundation', icon:'📘',
+    start:'2026-03-01', end:'2026-03-28',
+    goal:'Learn the exam format. No pressure. One skill per day, 45 min max. You\'re building a habit, not cramming.',
+    color:'#4f8ef7', badge:'Weeks 1–4'
+  },
+  {
+    id:2, name:'Phase 2 — Build Skills', icon:'📗',
+    start:'2026-03-29', end:'2026-05-09',
+    goal:'Start timed practice. Write full essays. Speak every Tuesday & Thursday. Stay consistent.',
+    color:'#3ec98a', badge:'Weeks 5–10'
+  },
+  {
+    id:3, name:'Phase 3 — Intensify', icon:'📙',
+    start:'2026-05-10', end:'2026-06-20',
+    goal:'Full mock tests every Saturday. Deep-dive on weak areas. Aim for your target band score.',
+    color:'#f0a340', badge:'Weeks 11–16'
+  },
+  {
+    id:4, name:'Phase 4 — Final Sprint', icon:'🏁',
+    start:'2026-06-21', end:'2026-07-21',
+    goal:'No new material. Sharpen what you know. Build confidence, manage nerves, sleep well.',
+    color:'#e05555', badge:'Weeks 17–20'
+  }
+];
+
+// Day schedule: 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+const DAY_SCHEDULE = {
+  0: { skill:'Speaking',  icon:'🗣️', color:'var(--S)', cssColor:'#f0a340', tagline:'Sunday speaking warm-up — light and conversational.', timeByPhase:[30,40,50,30] },
+  1: { skill:'Writing',   icon:'✍️', color:'var(--W)', cssColor:'#4f8ef7', tagline:'Mondays are for Writing — essays and graphs.',           timeByPhase:[45,60,75,45] },
+  2: { skill:'Reading',   icon:'📖', color:'var(--R)', cssColor:'#e05555', tagline:'Tuesdays are for Reading — skim, scan, conquer.',        timeByPhase:[45,55,70,40] },
+  3: { skill:'Listening', icon:'🎧', color:'var(--L)', cssColor:'#3ec98a', tagline:'Wednesdays are for Listening — train your ear.',         timeByPhase:[45,55,65,35] },
+  4: { skill:'Speaking',  icon:'🗣️', color:'var(--S)', cssColor:'#f0a340', tagline:'Thursdays are for Speaking — record and review.',        timeByPhase:[45,55,65,40] },
+  5: { skill:'Reading',   icon:'📖', color:'var(--R)', cssColor:'#e05555', tagline:'Fridays are for Reading — timed and sharp.',             timeByPhase:[45,55,65,35] },
+  6: { skill:'Listening', icon:'🎧', color:'var(--L)', cssColor:'#3ec98a', tagline:'Saturdays are for Listening + light mock practice.',     timeByPhase:[60,75,240,60] },
+};
+
+// Task bank — keyed by skill, then phase (1-4), each has sections
+const TASKS = {
+  Writing: {
+    1: {
+      title: 'Writing — Foundation',
+      subtitle: 'Today\'s goal: <strong>understand</strong> the structure. Don\'t write a full essay yet — study and absorb.',
+      sections: [
+        { label:'Core Task', gc:'var(--W)', items:[
+          { text:'Read and analyze one model Task 1 answer (bar chart or line graph)', diff:'Study the intro → overview → 2 body paragraph structure' },
+          { text:'Write a 2-sentence overview for a graph you find online — don\'t do the full thing', diff:'Just the overview. That\'s it.' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'Watch one YouTube video in English (15+ min) — no subtitles if possible', diff:'Immersion habit' },
+          { text:'Add 10 new IELTS vocabulary words to your notebook or Anki deck', diff:'Consistency beats volume' },
+        ]},
+      ]
+    },
+    2: {
+      title: 'Writing — Build',
+      subtitle: 'Write a full <strong>Task 2 essay</strong> today. 250+ words, 40-minute timer, then self-grade using the band descriptors.',
+      sections: [
+        { label:'Core Task', gc:'var(--W)', items:[
+          { text:'Write a full Task 2 essay — opinion or discussion type', diff:'250+ words · strict 40-min timer' },
+          { text:'Self-grade: check for coherence, topic sentences, and lexical range', diff:'Be honest with yourself' },
+          { text:'Write a Task 1 graph response (150 words, 20 min)', diff:'Always write an overview sentence — it\'s worth a lot' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'Watch or read English news for 15 min', diff:'BBC, CNN, or an English podcast' },
+          { text:'Review 15 vocabulary words + write 2 in new sentences', diff:'Active recall > passive reading' },
+        ]},
+      ]
+    },
+    3: {
+      title: 'Writing — Intensify',
+      subtitle: 'Write under <strong>real test pressure</strong>. Then rewrite using feedback. Gap between drafts = your improvement.',
+      sections: [
+        { label:'Core Task', gc:'var(--W)', items:[
+          { text:'Write Task 2 essay under timed conditions (40 min, no breaks)', diff:'Hard mode: no editing as you write. Just flow.' },
+          { text:'Rewrite one previous Task 2 using corrections — compare side by side', diff:'This is the fastest way to improve' },
+          { text:'Write Task 1 in 18 minutes (push your speed)', diff:'Accuracy + efficiency together' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'20 min English immersion — podcast, documentary, anything you enjoy', diff:'Enjoyment = retention' },
+          { text:'Vocabulary: 10 new words + review the last 30', diff:'Spaced repetition works' },
+        ]},
+      ]
+    },
+    4: {
+      title: 'Writing — Final Review',
+      subtitle: '<strong>No new essays.</strong> Re-read your best work. Absorb the patterns. Confidence is built on what you\'ve already done.',
+      sections: [
+        { label:'Light Review', gc:'var(--W)', items:[
+          { text:'Re-read your 2 best Task 2 essays — note what made them good', diff:'Recognition over production today' },
+          { text:'Glance at one model answer for Task 1 — absorb the language', diff:'Light. No writing.' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min English media — something enjoyable, low effort', diff:'Just stay in English mode' },
+          { text:'Vocab: review your strongest words only — build confidence', diff:'No new words this phase' },
+        ]},
+      ]
+    },
+  },
+
+  Reading: {
+    1: {
+      title: 'Reading — Foundation',
+      subtitle: 'Today\'s goal: learn <strong>how to read for IELTS</strong>, not like a book. Skim first, scan for answers second.',
+      sections: [
+        { label:'Core Task', gc:'var(--R)', items:[
+          { text:'Read 1 article (news or academic) — underline the topic sentence of each paragraph only', diff:'Don\'t read every word. Find the main idea per paragraph.' },
+          { text:'Practice True / False / Not Given on 10 questions', diff:'The most misunderstood question type — learn it cold' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'Watch or listen to something in English for 15+ min', diff:'Habit building' },
+          { text:'Add 10 new vocab words', diff:'Prioritize academic vocabulary (AWL list)' },
+        ]},
+      ]
+    },
+    2: {
+      title: 'Reading — Build',
+      subtitle: 'Time to go <strong>timed and full</strong>. One passage, 20 minutes strict. Then review every single mistake.',
+      sections: [
+        { label:'Core Task', gc:'var(--R)', items:[
+          { text:'Do 1 full IELTS reading passage under 20-minute timer', diff:'Cambridge IELTS books are best' },
+          { text:'After time\'s up — review every wrong answer, understand why', diff:'Error log: write down the question type you missed' },
+          { text:'Practice matching headings on a separate passage (common weak spot)', diff:'Match paragraphs to a heading list' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min English media', diff:'News = good reading vocab exposure' },
+          { text:'15 vocab words + review last week\'s', diff:'' },
+        ]},
+      ]
+    },
+    3: {
+      title: 'Reading — Intensify',
+      subtitle: '<strong>Full 3-passage test today, 60 minutes strict.</strong> Simulate the real thing. No pausing, no phone.',
+      sections: [
+        { label:'Core Task', gc:'var(--R)', items:[
+          { text:'Full timed reading test — all 3 passages, 60 min, real conditions', diff:'No stopping. If you run out of time, guess don\'t skip.' },
+          { text:'Deep review: categorize every mistake by question type', diff:'Pattern recognition — where do you lose the most points?' },
+          { text:'Speed drill: skim passage 3 in 3 minutes, then answer only the questions you\'re confident about', diff:'Time management training' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'20 min English immersion', diff:'' },
+          { text:'10 new vocab + review 20 old ones', diff:'Quality over quantity now' },
+        ]},
+      ]
+    },
+    4: {
+      title: 'Reading — Final Sprint',
+      subtitle: '<strong>Light practice only.</strong> One passage, comfortable pace. You\'re not training anymore — you\'re staying sharp.',
+      sections: [
+        { label:'Light Practice', gc:'var(--R)', items:[
+          { text:'1 reading passage — relaxed pace, no strict timer today', diff:'Accuracy over speed in the final stretch' },
+          { text:'Review your most common mistake type one more time', diff:'Just review your notes — no new practice' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min enjoyable English content', diff:'Keep the brain warm, not stressed' },
+          { text:'Vocab: only your strongest known words today', diff:'Confidence building, not cramming' },
+        ]},
+      ]
+    },
+  },
+
+  Listening: {
+    1: {
+      title: 'Listening — Foundation',
+      subtitle: 'Get familiar with the <strong>4 sections</strong> and question types. Prediction is the key skill to build right now.',
+      sections: [
+        { label:'Core Task', gc:'var(--L)', items:[
+          { text:'Study Section 1 & 2 question types — form completion, MCQ, note filling', diff:'Cambridge IELTS guide or YouTube IELTS channel' },
+          { text:'Do 1 Section 1 practice — focus on predicting answers before you hear the audio', diff:'Read all questions in the gap time before each section' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'Listen to an English podcast for 15+ min', diff:'Anything you enjoy — accent diversity is a bonus' },
+          { text:'Add 10 vocabulary words', diff:'' },
+        ]},
+      ]
+    },
+    2: {
+      title: 'Listening — Build',
+      subtitle: 'Full Sections 3 & 4 today — these are the harder academic ones. <strong>Stay focused, don\'t panic.</strong>',
+      sections: [
+        { label:'Core Task', gc:'var(--L)', items:[
+          { text:'Do Sections 3 & 4 full practice (academic discussion + monologue)', diff:'Section 4 has no pause — train your stamina' },
+          { text:'Review every wrong answer — write down WHY you missed it', diff:'Was it: distraction? spelling? mishearing? Log it.' },
+          { text:'Re-listen to 2 questions you got wrong — transcribe what you hear word for word', diff:'Transcription exercise builds accuracy fast' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min English podcast or news audio', diff:'' },
+          { text:'15 vocab words + 2 new sentences', diff:'' },
+        ]},
+      ]
+    },
+    3: {
+      title: 'Listening — Intensify',
+      subtitle: 'Go after your <strong>weakest section</strong> today. Targeted reps beat full tests when you\'re trying to close a gap.',
+      sections: [
+        { label:'Core Task', gc:'var(--L)', items:[
+          { text:'Identify your weakest section (1, 2, 3, or 4) — do it 3 times back to back', diff:'Same section, different audio. Repetition = pattern recognition.' },
+          { text:'Transcription exercise: write exactly what you hear for 2 minutes of audio', diff:'Don\'t look at the script until after — then compare' },
+          { text:'Saturday only: full 4-section mock test under real conditions', diff:'No phone. No pause. Time it properly.' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'20 min English audio — vary accents (British, Australian, American)', diff:'IELTS uses multiple accents' },
+          { text:'10 vocab + spaced review', diff:'' },
+        ]},
+      ]
+    },
+    4: {
+      title: 'Listening — Final Sprint',
+      subtitle: '<strong>One light section only.</strong> Stay tuned in, don\'t overthink. Your ear is already trained.',
+      sections: [
+        { label:'Light Practice', gc:'var(--L)', items:[
+          { text:'1 listening section — comfortable pace, double-check spelling on answers', diff:'Spelling errors cost easy marks. Don\'t let them.' },
+          { text:'Quick review of your error log from Phase 3 — just read, don\'t redo', diff:'Remind yourself what to avoid' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min of something you enjoy in English', diff:'Keep the engine warm' },
+          { text:'Quick vocab review — your top 20 IELTS words', diff:'' },
+        ]},
+      ]
+    },
+  },
+
+  Speaking: {
+    1: {
+      title: 'Speaking — Foundation',
+      subtitle: 'Speak out loud today. <strong>Record yourself.</strong> Most people never do this — those who do improve fastest.',
+      sections: [
+        { label:'Core Task', gc:'var(--S)', items:[
+          { text:'Answer 5 Part 1 questions out loud and record yourself', diff:'Topics: home, hobbies, school, daily routine, food' },
+          { text:'Listen back — count how many times you say "um", "like", or repeat yourself', diff:'Awareness is step 1. Don\'t judge, just notice.' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'Watch someone speak English confidently for 15 min (TED talk, YouTube)', diff:'Model fluency, not perfection' },
+          { text:'Add 10 vocabulary words — prioritize phrases over single words', diff:'e.g. "to be honest", "what I mean is", "on the other hand"' },
+        ]},
+      ]
+    },
+    2: {
+      title: 'Speaking — Build',
+      subtitle: 'Part 2 cue card day. <strong>Pick a topic, talk for 2 minutes straight.</strong> No stopping, even if you feel awkward.',
+      sections: [
+        { label:'Core Task', gc:'var(--S)', items:[
+          { text:'Choose 2 cue card topics — talk for 2 min each, record both', diff:'Topics: "Describe a person you admire", "A memorable trip", "A skill you want to learn"' },
+          { text:'Listen back — did you fill the 2 minutes? Note where you ran out of ideas', diff:'Prep strategy: Past → Present → Future works for almost any cue card' },
+          { text:'Answer 3 Part 3 abstract questions — give both sides if possible', diff:'"Do you think technology is making people less social?"' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min spoken English content', diff:'Podcasts where people have real conversations are best' },
+          { text:'15 vocab words — speaking-specific phrases and connectors', diff:'' },
+        ]},
+      ]
+    },
+    3: {
+      title: 'Speaking — Intensify',
+      subtitle: 'Simulate the <strong>full speaking test</strong> today. Part 1 + Part 2 + Part 3 back to back. Real conditions.',
+      sections: [
+        { label:'Core Task', gc:'var(--S)', items:[
+          { text:'Full speaking test simulation — Parts 1, 2, and 3 in order', diff:'Use a partner, tutor, or AI speaking tool (ELSA, ChatGPT voice)' },
+          { text:'Record it. Review for: filler words, vocabulary range, grammar errors', diff:'You\'ll notice patterns you can\'t hear in real time' },
+          { text:'Part 3 debate practice: pick a topic, argue both sides for 90 seconds each', diff:'Topics: education, environment, social media, technology' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'20 min spoken English — debate clips, interviews, discussions', diff:'Political/opinion content = great Part 3 prep' },
+          { text:'10 vocab + 3 speaking connector phrases', diff:'e.g. "Building on that...", "What I find interesting is..."' },
+        ]},
+      ]
+    },
+    4: {
+      title: 'Speaking — Final Sprint',
+      subtitle: '<strong>Confidence mode.</strong> Talk about things you love. Fluency comes from enjoyment, not pressure.',
+      sections: [
+        { label:'Light Practice', gc:'var(--S)', items:[
+          { text:'Speak freely about your favorite topic for 5 minutes — no structure, just flow', diff:'This rewires your brain to associate speaking with ease' },
+          { text:'Do 1 Part 2 cue card on a familiar topic — something you\'ve done before', diff:'Familiar = fluent. Don\'t pick something hard.' },
+        ]},
+        { label:'Daily English', gc:'var(--gold)', items:[
+          { text:'15 min enjoyable English content', diff:'' },
+          { text:'Review your top speaking phrases — just read them, don\'t memorize new ones', diff:'Trust what you already have' },
+        ]},
+      ]
+    },
+  },
+};
+
+// Weekly schedule display
+const WEEK_DATA = [
+  { dow:1, label:'MON', skill:'Writing',   tag:'W', task:'Full Task 2 essay (or Task 1 in early phases)', hint:'Timed + self-grade' },
+  { dow:2, label:'TUE', skill:'Reading',   tag:'R', task:'Timed reading passage(s)', hint:'Skim questions first, then the text' },
+  { dow:3, label:'WED', skill:'Listening', tag:'L', task:'Sections practice + error review', hint:'Transcription exercise on hard questions' },
+  { dow:4, label:'THU', skill:'Speaking',  tag:'S', task:'Cue card + Part 3 discussion', hint:'Record yourself — always' },
+  { dow:5, label:'FRI', skill:'Reading',   tag:'R', task:'Speed reading + question type drill', hint:'Focus on your weakest question type' },
+  { dow:6, label:'SAT', skill:'Listening', tag:'L', task:'Full listening test or mock (Phase 3+)', hint:'Simulate real exam conditions' },
+  { dow:0, label:'SUN', skill:'Speaking',  tag:'S', task:'Light speaking warm-up', hint:'Low effort, stay in the habit' },
+];
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function getPhase() {
+  const now = new Date();
+  for (const p of PHASES) {
+    const s = new Date(p.start), e = new Date(p.end);
+    if (now >= s && now <= e) return p;
+  }
+  // Before start
+  if (now < new Date(PHASES[0].start)) return PHASES[0];
+  // After all phases (exam done)
+  return PHASES[3];
+}
+
+function getPhaseIndex() {
+  const p = getPhase();
+  return p.id; // 1-4
+}
+
+function getDOW(offset=0) {
+  return (new Date().getDay() + offset + 7) % 7; // 0=Sun
+}
+
+function getSkillData(dow) { return DAY_SCHEDULE[dow]; }
+
+function getTaskData(skill, phaseId) {
+  return TASKS[skill]?.[phaseId] || TASKS[skill]?.[1];
+}
+
+function getDayName(dow) {
+  return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dow];
+}
+
+// ─────────────────────────────────────────────
+// RENDER FUNCTIONS
+// ─────────────────────────────────────────────
+
+function renderCountdown() {
+  const d = Math.ceil((EXAM_DATE - new Date()) / 864e5);
+  document.getElementById('countdown-num').textContent = Math.max(0, d);
+}
+
+function renderPhaseBanner() {
+  const p = getPhase();
+  const banner = document.getElementById('phase-banner');
+  banner.style.background = p.color + '18';
+  banner.style.border = '1px solid ' + p.color + '33';
+  document.getElementById('pb-icon').textContent = p.icon;
+  document.getElementById('pb-name').textContent = p.name;
+  document.getElementById('pb-range').textContent = p.start + ' → ' + p.end;
+  document.getElementById('pb-goal').textContent = p.goal;
+  const badge = document.getElementById('pb-badge');
+  badge.textContent = '📍 You are here · ' + p.badge;
+  badge.style.background = p.color + '22';
+  badge.style.color = p.color;
+  badge.style.border = '1px solid ' + p.color + '44';
+}
+
+function renderTodayTomorrow() {
+  const phaseId = getPhaseIndex();
+  const todayDOW = getDOW(0);
+  const tmrDOW   = getDOW(1);
+
+  const todaySched = getSkillData(todayDOW);
+  const tmrSched   = getSkillData(tmrDOW);
+
+  const todayMins = todaySched.timeByPhase[phaseId-1];
+  const tmrMins   = tmrSched.timeByPhase[phaseId-1];
+
+  // Today
+  document.getElementById('today-dayname').textContent = getDayName(todayDOW).toUpperCase();
+  document.getElementById('today-icon').textContent = todaySched.icon;
+  document.getElementById('today-skill').textContent = todaySched.skill;
+  document.getElementById('today-skill').style.color = todaySched.cssColor;
+  document.getElementById('today-tagline').textContent = todaySched.tagline;
+  document.getElementById('today-time').innerHTML = '<strong>' + todayMins + ' min</strong> today · Phase ' + phaseId;
+  document.getElementById('today-accent').style.background = todaySched.cssColor;
+  document.getElementById('today-card').style.borderColor = todaySched.cssColor + '55';
+
+  // Tomorrow
+  document.getElementById('tmr-dayname').textContent = getDayName(tmrDOW).toUpperCase();
+  document.getElementById('tmr-icon').textContent = tmrSched.icon;
+  document.getElementById('tmr-skill').textContent = tmrSched.skill;
+  document.getElementById('tmr-skill').style.color = tmrSched.cssColor;
+  document.getElementById('tmr-tagline').textContent = tmrSched.tagline;
+  document.getElementById('tmr-time').innerHTML = 'Prep time: <strong>' + tmrMins + ' min</strong>';
+}
+
+function renderChecklist() {
+  const phaseId = getPhaseIndex();
+  const todayDOW = getDOW(0);
+  const sched = getSkillData(todayDOW);
+  const taskData = getTaskData(sched.skill, phaseId);
+  if (!taskData) return;
+
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('cl-title').textContent = taskData.title;
+  document.getElementById('day-chip').textContent = dayNames[todayDOW].toUpperCase();
+  document.getElementById('day-chip').style.background = sched.cssColor;
+  document.getElementById('cl-subtitle').innerHTML = taskData.subtitle;
+  document.getElementById('checklist-skill-label').textContent = sched.skill + ' · Phase ' + phaseId;
+
+  const container = document.getElementById('cl-sections');
+  container.innerHTML = '';
+  let totalCount = 0;
+
+  taskData.sections.forEach(sec => {
+    const secEl = document.createElement('div');
+    secEl.className = 'cl-section';
+    secEl.innerHTML = `<div class="cl-section-title"><div class="cl-dot" style="background:${sec.gc}"></div>${sec.label}</div>`;
+    const itemsEl = document.createElement('div');
+    sec.items.forEach((item, i) => {
+      totalCount++;
+      const key = todayStr() + '_' + sec.label + '_' + i;
+      const isDone = (checks[key] === true);
+      const ci = document.createElement('div');
+      ci.className = 'ci' + (isDone ? ' done' : '');
+      ci.innerHTML = `
+        <div class="cibox">${isDone ? '✓' : ''}</div>
+        <div>
+          <div class="ci-text">${item.text}</div>
+          ${item.diff ? '<div class="ci-diff">' + item.diff + '</div>' : ''}
+        </div>`;
+      ci.onclick = () => {
+        checks[key] = !checks[key];
+        ci.className = 'ci' + (checks[key] ? ' done' : '');
+        ci.querySelector('.cibox').textContent = checks[key] ? '✓' : '';
+        saveChecks();
+        updateProgress(totalCount);
+      };
+      itemsEl.appendChild(ci);
+    });
+    secEl.appendChild(itemsEl);
+    container.appendChild(secEl);
+  });
+
+  window._totalTasks = totalCount;
+  updateProgress(totalCount);
+}
+
+function updateProgress(total) {
+  total = total || window._totalTasks || 1;
+  const done = Object.values(checks).filter(Boolean).length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = done + ' / ' + total + ' complete';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  if (done >= total && total > 0) markStreakDone();
+}
+
+function renderWeekTable() {
+  const todayDOW = new Date().getDay();
+  const phaseId = getPhaseIndex();
+  const tbody = document.getElementById('week-table');
+  let html = `<div class="tr thead">
+    <div class="td">Day</div>
+    <div class="td">Skill</div>
+    <div class="td">Focus</div>
+    <div class="td time">Time</div>
+  </div>`;
+
+  WEEK_DATA.forEach(row => {
+    const isToday = row.dow === todayDOW;
+    const sched = getSkillData(row.dow);
+    const mins = sched.timeByPhase[phaseId-1];
+    html += `<div class="tr ${isToday ? 'active-day' : ''}">
+      <div class="td day">
+        <strong>${row.label}</strong>
+        ${isToday ? '<span class="today-label">← TODAY</span>' : ''}
+      </div>
+      <div class="td focus"><span class="tag ${row.tag}">${row.skill}</span></div>
+      <div class="td"><div><div class="task-txt">${row.task}</div><div class="hint-txt">${row.hint}</div></div></div>
+      <div class="td time">${mins} min</div>
+    </div>`;
+  });
+  tbody.innerHTML = html;
+}
+
+// ─────────────────────────────────────────────
+// STREAK
+// ─────────────────────────────────────────────
+
+const SK='ielts3_streak', DK='ielts3_date', HK='ielts3_hist';
+
+function yesterday() { return new Date(Date.now()-864e5).toISOString().slice(0,10); }
+
+function getStreak() {
+  let s = +localStorage.getItem(SK)||0;
+  const last = localStorage.getItem(DK)||'';
+  if (last && last !== todayStr() && last !== yesterday()) s = 0;
+  return s;
+}
+function getHist() { try { return JSON.parse(localStorage.getItem(HK)||'[]'); } catch(e){ return []; } }
+
+function markStreakDone() {
+  if (localStorage.getItem(DK) === todayStr()) return;
+  let s = getStreak() + 1;
+  localStorage.setItem(SK, s);
+  localStorage.setItem(DK, todayStr());
+  const h = getHist();
+  if (!h.includes(todayStr())) h.push(todayStr());
+  localStorage.setItem(HK, JSON.stringify(h));
+  renderStreak();
+}
+
+function renderStreak() {
+  document.getElementById('streak-num').textContent = getStreak();
+  const row = document.getElementById('dot-row');
+  row.innerHTML = '';
+  const hist = getHist(), t = todayStr();
+  for (let i = 20; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 864e5).toISOString().slice(0,10);
+    const el = document.createElement('div');
+    el.className = 'sdot' + (hist.includes(d) ? ' done' : '') + (d === t ? ' today' : '');
+    el.title = d;
+    row.appendChild(el);
+  }
+}
+
+// ─────────────────────────────────────────────
+// CHECKS (keyed to today's date so they auto-reset)
+// ─────────────────────────────────────────────
+
+const CK = 'ielts3_checks';
+
+function loadChecks() {
+  try {
+    const s = JSON.parse(localStorage.getItem(CK) || '{}');
+    // Only load if saved today
+    return s.date === todayStr() ? (s.c || {}) : {};
+  } catch(e) { return {}; }
+}
+
+function saveChecks() {
+  localStorage.setItem(CK, JSON.stringify({ date: todayStr(), c: checks }));
+}
+
+let checks = loadChecks();
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+
+renderCountdown();
+renderPhaseBanner();
+renderStreak();
+renderTodayTomorrow();
+renderChecklist();
+renderWeekTable();
+
+setInterval(renderCountdown, 60000);
+</script>
+</body>
+</html>
