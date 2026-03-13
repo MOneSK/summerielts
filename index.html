@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hóa 11 — Road to 9.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #10141c;
+    --surface2: #161b26;
+    --surface3: #1c2230;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #eef0f7;
+    --muted: #6b7494;
+    --faint: #3a3f54;
+    --accent: #4f8ef7;
+    --accent2: #3dd68c;
+    --warn: #f5a623;
+    --danger: #f2564d;
+    --purple: #a78bfa;
+    --teal: #22d3ee;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;min-height:100vh}
+
+  /* ── SIDEBAR ── */
+  .sidebar{
+    position:fixed;top:0;left:0;width:240px;height:100vh;
+    background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;z-index:100;overflow-y:auto;
+  }
+  .brand{padding:28px 24px 20px;border-bottom:1px solid var(--border)}
+  .brand-tag{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+  .brand-title{font-size:17px;font-weight:700;color:var(--text);line-height:1.3}
+  .brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+  .score-widget{margin:16px;background:var(--surface2);border-radius:12px;padding:14px;border:1px solid var(--border)}
+  .sw-label{font-size:10px;font-family:var(--mono);color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+  .sw-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .sw-cur{font-size:26px;font-weight:700;color:var(--text);font-family:var(--mono)}
+  .sw-arrow{color:var(--muted);font-size:14px}
+  .sw-target{font-size:26px;font-weight:700;color:var(--accent2);font-family:var(--mono)}
+  .sw-bar{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+  .sw-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .sw-days{font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+
+  nav{flex:1;padding:8px 0}
+  .nav-group{padding:12px 16px 4px;font-size:10px;font-family:var(--mono);color:var(--faint);letter-spacing:2px;text-transform:uppercase}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-left:2px solid transparent;transition:all .15s;color:var(--muted);font-size:13.5px;text-decoration:none}
+  .nav-item:hover{color:var(--text);background:rgba(255,255,255,.03)}
+  .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(79,142,247,.06)}
+  .nav-icon{width:16px;height:16px;opacity:.7;flex-shrink:0}
+
+  /* ── MAIN ── */
+  .main{margin-left:240px;min-height:100vh;padding:40px 48px 80px}
+
+  /* ── PAGE HEADER ── */
+  .page-head{margin-bottom:32px}
+  .ph-eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+  .ph-title{font-size:28px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:6px}
+  .ph-sub{font-size:14px;color:var(--muted)}
+
+  /* ── SECTIONS ── */
+  .view{display:none}.view.active{display:block}
+
+  /* ── DAY CARDS ── */
+  .day-grid{display:flex;flex-direction:column;gap:10px}
+  .day-card{
+    display:flex;align-items:flex-start;gap:14px;
+    padding:16px 18px;border-radius:12px;
+    border:1px solid var(--border);background:var(--surface);
+    cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  }
+  .day-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--faint);transition:background .2s}
+  .day-card:hover{border-color:var(--border2);background:var(--surface2)}
+  .day-card.done{border-color:rgba(61,214,140,.2);background:rgba(61,214,140,.03)}
+  .day-card.done::before{background:var(--accent2)}
+  .day-card.today{border-color:rgba(79,142,247,.3);background:rgba(79,142,247,.04)}
+  .day-card.today::before{background:var(--accent)}
+  .dc-check{
+    width:22px;height:22px;border-radius:6px;flex-shrink:0;margin-top:1px;
+    border:1.5px solid var(--faint);display:flex;align-items:center;justify-content:center;
+    transition:all .2s;
+  }
+  .day-card.done .dc-check{background:var(--accent2);border-color:var(--accent2)}
+  .dc-body{flex:1}
+  .dc-day{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+  .dc-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .dc-desc{font-size:13px;color:var(--muted);line-height:1.5}
+  .dc-meta{display:flex;gap:8px;margin-top:8px;align-items:center}
+  .dc-tag{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:20px;border:1px solid var(--border2);color:var(--muted)}
+  .dc-tag.today-tag{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.08)}
+
+  /* ── FLASHCARDS ── */
+  .fc-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+  .fc-pill{padding:6px 14px;border-radius:20px;border:1px solid var(--border2);font-size:12px;cursor:pointer;color:var(--muted);transition:all .15s;font-family:var(--mono)}
+  .fc-pill:hover{border-color:var(--border2);color:var(--text)}
+  .fc-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .fc-progress{display:flex;gap:12px;margin-bottom:20px}
+  .fc-stat{text-align:center;flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 8px}
+  .fc-stat-val{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--text)}
+  .fc-stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+  .fc-stat.known .fc-stat-val{color:var(--accent2)}
+  .fc-stat.miss .fc-stat-val{color:var(--danger)}
+
+  .flashcard{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;overflow:hidden;margin-bottom:16px;
+    min-height:260px;display:flex;flex-direction:column;
+  }
+  .fc-top{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .fc-cat-badge{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:20px;font-weight:700}
+  .fc-nav-txt{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .fc-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 32px;cursor:pointer;text-align:center;gap:12px;transition:background .15s}
+  .fc-main:hover{background:var(--surface2)}
+  .fc-question{font-size:17px;font-weight:600;color:var(--text);white-space:pre-line;line-height:1.6}
+  .fc-flip-hint{font-size:12px;color:var(--faint);font-family:var(--mono)}
+  .fc-answer{
+    background:rgba(61,214,140,.07);border:1px solid rgba(61,214,140,.2);
+    border-radius:10px;padding:14px 18px;
+    font-size:14px;color:var(--accent2);white-space:pre-line;line-height:1.7;
+    text-align:left;width:100%;display:none;
+  }
+  .fc-bottom{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px}
+  .btn{padding:9px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-family:var(--sans);font-weight:500;border:1px solid var(--border2);background:transparent;color:var(--text);transition:all .15s;flex:1}
+  .btn:hover{background:var(--surface3)}
+  .btn-miss{border-color:rgba(242,86,77,.3);color:var(--danger)}
+  .btn-miss:hover{background:rgba(242,86,77,.1)}
+  .btn-ok{border-color:rgba(61,214,140,.3);color:var(--accent2)}
+  .btn-ok:hover{background:rgba(61,214,140,.1)}
+  .btn-next{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-next:hover{background:#3a7de8}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-primary:hover{background:#3a7de8}
+
+  /* ── EQUATIONS ── */
+  .eq-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  .eq-head{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+  .eq-title{font-size:14px;font-weight:600;color:var(--text)}
+  .eq-num{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .eq-body{padding:16px 18px}
+  .eq-prompt{font-size:13.5px;color:var(--muted);margin-bottom:12px;line-height:1.5}
+  .eq-input{
+    width:100%;padding:12px 14px;border-radius:8px;
+    border:1px solid var(--border2);background:var(--surface2);
+    color:var(--text);font-size:14px;font-family:var(--mono);
+    resize:vertical;min-height:56px;line-height:1.5;
+    transition:border-color .15s;
+  }
+  .eq-input:focus{outline:none;border-color:var(--accent)}
+  .eq-answer{
+    display:none;margin-top:12px;padding:14px;border-radius:8px;
+    background:rgba(61,214,140,.06);border:1px solid rgba(61,214,140,.2);
+    font-family:var(--mono);font-size:13px;color:var(--accent2);
+    white-space:pre-line;line-height:1.8;
+  }
+  .eq-footer{padding:10px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+
+  /* ── TIMER ── */
+  .timer-wrap{display:flex;flex-direction:column;align-items:center;margin:12px 0 24px}
+  .timer-ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 16px}
+  .timer-svg{transform:rotate(-90deg)}
+  .timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+  .timer-digits{font-size:42px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1}
+  .timer-state{font-size:12px;color:var(--muted);margin-top:6px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase}
+  .timer-btns{display:flex;gap:10px;justify-content:center}
+  .tplan{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+  .tplan-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .tplan-part{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+  .tplan-detail{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .tplan-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:700}
+  .score-record{margin-top:16px}
+  .score-entry-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+  .score-input{
+    width:150px;padding:10px 12px;border-radius:8px;
+    border:1px solid var(--border2);background:var(--surface2);
+    color:var(--text);font-size:15px;font-family:var(--mono);
+  }
+  .score-input:focus{outline:none;border-color:var(--accent)}
+  .score-history{display:flex;flex-direction:column;gap:6px}
+  .sh-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:13px}
+  .sh-label{color:var(--muted);font-family:var(--mono);font-size:12px}
+  .sh-score{font-family:var(--mono);font-weight:700;font-size:16px}
+
+  /* ── CARD COLORS ── */
+  .cat-cong{background:rgba(79,142,247,.1);color:#7bb3fc}
+  .cat-tach{background:rgba(245,166,35,.1);color:#f9c55a}
+  .cat-benz{background:rgba(242,86,77,.1);color:#f7837b}
+  .cat-dche{background:rgba(61,214,140,.1);color:#5de8ab}
+  .cat-nhan{background:rgba(167,139,250,.1);color:#c4acff}
+
+  /* ── RULE CARDS ── */
+  .rule-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+  .rc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .rc-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .rc-title{font-size:14px;font-weight:600;color:var(--text)}
+  .rc-sub{font-size:12px;color:var(--muted);margin-top:1px}
+  .rc-body{padding:16px 18px}
+  .rc-body ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .rc-body li{display:flex;gap:10px;font-size:13.5px;color:var(--muted);line-height:1.5}
+  .rc-body li::before{content:'›';color:var(--accent);font-size:16px;line-height:1.4;flex-shrink:0}
+  .rc-body li strong{color:var(--text)}
+  .eq-box{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:11px 14px;font-family:var(--mono);font-size:13px;color:var(--text);line-height:1.8;margin:8px 0}
+  .eq-box.green{border-left-color:var(--accent2)}
+  .eq-box.warn{border-left-color:var(--warn)}
+  .eq-box.danger{border-left-color:var(--danger)}
+  .eq-note{font-size:12px;color:var(--muted);margin-top:4px;padding-left:4px;line-height:1.5}
+  .hl{color:var(--accent2);font-weight:700}
+  .hl-r{color:var(--danger);font-weight:700}
+  .hl-w{color:var(--warn);font-weight:700}
+  .sub-head{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+  /* ── SCROLL ── */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--faint);border-radius:2px}
+
+  @media(max-width:768px){
+    .sidebar{display:none}
+    .main{margin-left:0;padding:24px 20px 60px}
+    .tplan{grid-template-columns:1fr}
+  }
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .view.active{animation:fadeIn .2s ease}
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-tag">Hóa 11 · GKỲ 2</div>
+    <div class="brand-title">Road to 9.0</div>
+    <div class="brand-sub">7-day prep plan</div>
+  </div>
+
+  <div class="score-widget">
+    <div class="sw-label">Tiến trình</div>
+    <div class="sw-row">
+      <span class="sw-cur" id="sw-cur">6.5</span>
+      <span class="sw-arrow">→</span>
+      <span class="sw-target">9.0</span>
+    </div>
+    <div class="sw-bar"><div class="sw-fill" id="sw-fill" style="width:0%"></div></div>
+    <div class="sw-days" id="sw-days">0 / 7 ngày</div>
+  </div>
+
+  <nav>
+    <div class="nav-group">Study</div>
+    <div class="nav-item active" onclick="nav('tracker',this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><polyline points="5,8 7,10 11,6"/></svg>
+      7-Day Plan
+    </div>
+    <div class="nav-item" onclick="nav('rules',this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><circle cx="8" cy="11" r=".5" fill="currentColor"/></svg>
+      Quy Tắc
+    </div>
+    <div class="nav-item" onclick="nav('flashcard',this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="10" rx="2"/><line x1="1" y1="7" x2="15" y2="7"/></svg>
+      Flashcards
+    </div>
+    <div class="nav-item" onclick="nav('equations',this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="5" x2="14" y2="5"/><line x1="2" y1="11" x2="9" y2="11"/></svg>
+      Phương Trình
+    </div>
+    <div class="nav-group">Practice</div>
+    <div class="nav-item" onclick="nav('timer',this)">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="9" r="6"/><polyline points="8,6 8,9 10,11"/><line x1="5.5" y1="1.5" x2="10.5" y2="1.5"/></svg>
+      Mock Test
+    </div>
+  </nav>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- ── TRACKER ── -->
+  <div class="view active" id="view-tracker">
+    <div class="page-head">
+      <div class="ph-eyebrow">Week Plan</div>
+      <div class="ph-title">7 ngày lên 9.0</div>
+      <div class="ph-sub">Click vào từng ngày để đánh dấu hoàn thành</div>
+    </div>
+    <div class="day-grid" id="day-grid"></div>
+  </div>
+
+  <!-- ── RULES ── -->
+  <div class="view" id="view-rules">
+    <div class="page-head">
+      <div class="ph-eyebrow">Quick Reference</div>
+      <div class="ph-title">Quy tắc cần nhớ</div>
+      <div class="ph-sub">Đọc xong là làm được bài — không cần nhớ lý thuyết dài</div>
+    </div>
+
+    <div class="sub-head">Quy tắc cộng</div>
+    <div class="rule-card">
+      <div class="rc-header">
+        <div class="rc-icon" style="background:rgba(79,142,247,.15)">📌</div>
+        <div><div class="rc-title">Markovnikov — Alkene + HX hoặc H₂O</div><div class="rc-sub">Áp dụng khi alkene KHÔNG đối xứng</div></div>
+      </div>
+      <div class="rc-body">
+        <ul>
+          <li><strong>H</strong> → C có <strong class="hl">NHIỀU H hơn</strong></li>
+          <li><strong>X hoặc OH</strong> → C có <strong class="hl-r">ÍT H hơn</strong></li>
+        </ul>
+        <div class="eq-box green" style="margin-top:14px">CH₃–CH=CH₂ + HBr → <span class="hl">CH₃–CHBr–CH₃</span> (CHÍNH · 2-bromopropane)</div>
+        <div class="eq-note">C2 có 1H, C3 có 2H → H vào C3, Br vào C2</div>
+        <div class="eq-box green">CH₃–CH=CH₂ + H₂O →(H₃PO₄,t°)→ <span class="hl">CH₃–CH(OH)–CH₃</span> (CHÍNH · bậc 2)</div>
+        <div class="eq-note" style="color:var(--danger)">⚠ Không phải 2 alcohol bậc 1! Đây là bẫy thường gặp nhất</div>
+        <div class="eq-box green">HC≡CH + H₂O →(HgSO₄, H₂SO₄, 80°C)→ <span class="hl">CH₃–CHO</span> (acetaldehyde)</div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rc-header">
+        <div class="rc-icon" style="background:rgba(245,166,35,.15)">⚡</div>
+        <div><div class="rc-title">Cộng X₂ — KHÔNG theo Markovnikov</div><div class="rc-sub">X₂ cộng đối xứng, không có sản phẩm chính/phụ</div></div>
+      </div>
+      <div class="rc-body">
+        <div class="eq-box warn">CH₂=CH₂ + Br₂ → <span class="hl-w">CH₂Br–CH₂Br</span> (1,2-dibromoethane)</div>
+        <div class="eq-note" style="color:var(--accent2)">✓ Dùng nhận biết alkene: dd Br₂ nâu đỏ → mất màu ngay</div>
+      </div>
+    </div>
+
+    <div class="sub-head">Quy tắc tách</div>
+    <div class="rule-card">
+      <div class="rc-header">
+        <div class="rc-icon" style="background:rgba(167,139,250,.15)">✂️</div>
+        <div><div class="rc-title">Zaitsev — Tách HX</div><div class="rc-sub">KOH / C₂H₅OH (cồn), đun nóng</div></div>
+      </div>
+      <div class="rc-body">
+        <ul>
+          <li>H tách từ C bên cạnh có <strong class="hl-r">ÍT H hơn</strong> → alkene bền nhất = sản phẩm chính</li>
+          <li><strong class="hl-r">KOH/C₂H₅OH</strong> → tách → alkene &nbsp;|&nbsp; <strong class="hl">KOH/H₂O</strong> → thủy phân → alcohol</li>
+        </ul>
+        <div class="eq-box" style="border-left-color:var(--purple);margin-top:14px">CH₃CH₂CH₂Br →(KOH/EtOH,t°)→ <span style="color:var(--purple)">CH₃–CH=CH₂</span> + HBr</div>
+        <div class="eq-note" style="color:var(--warn)">⚠ 1-bromopropane VÀ 2-bromopropane đều cho cùng sản phẩm propene!</div>
+      </div>
+    </div>
+
+    <div class="sub-head">Benzene — phân biệt 3 điều kiện</div>
+    <div class="rule-card">
+      <div class="rc-header">
+        <div class="rc-icon" style="background:rgba(242,86,77,.15)">⬡</div>
+        <div><div class="rc-title">3 phản ứng, 3 điều kiện khác nhau</div><div class="rc-sub">Điều kiện quyết định sản phẩm</div></div>
+      </div>
+      <div class="rc-body">
+        <div class="eq-box green">C₆H₆ + Br₂ →(<span class="hl">FeBr₃</span>)→ C₆H₅Br + HBr &nbsp;&nbsp;[THẾ — cần xúc tác Lewis]</div>
+        <div class="eq-box warn">C₆H₆ + 3Cl₂ →(<span class="hl-w">hν</span>)→ C₆H₆Cl₆ (666) &nbsp;&nbsp;[CỘNG — cần ánh sáng]</div>
+        <div class="eq-box danger">C₆H₆ + HNO₃đặc →(<span class="hl-r">H₂SO₄đặc, 50°C</span>)→ C₆H₅NO₂ &nbsp;&nbsp;[NITRO HÓA]</div>
+        <div class="eq-note" style="color:var(--accent2)">✓ Toluene + KMnO₄ đun nóng → mất màu tím. Benzene → không mất màu</div>
+      </div>
+    </div>
+
+    <div class="sub-head">Điều chế quan trọng</div>
+    <div class="rule-card">
+      <div class="rc-header">
+        <div class="rc-icon" style="background:rgba(61,214,140,.15)">⚗️</div>
+        <div><div class="rc-title">Phương trình điều chế cần nhớ</div></div>
+      </div>
+      <div class="rc-body">
+        <div class="eq-box green">C₂H₅OH →(<span class="hl">H₂SO₄đặc, 170°C</span>)→ CH₂=CH₂↑ + H₂O &nbsp;[ethylene · PTN]</div>
+        <div class="eq-note" style="color:var(--warn)">⚠ 140°C → ether (không phải alkene)</div>
+        <div class="eq-box green">CaC₂ + 2H₂O → <span class="hl">HC≡CH</span>↑ + Ca(OH)₂ &nbsp;[acetylene · PTN]</div>
+        <div class="eq-box green">2CH₄ →(<span class="hl">1500°C, làm lạnh nhanh</span>)→ HC≡CH + 3H₂ &nbsp;[acetylene · CN]</div>
+        <div class="eq-box green">3HC≡CH →(<span class="hl">C, 600°C</span>)→ C₆H₆ &nbsp;[benzene từ acetylene]</div>
+      </div>
+    </div>
+
+    <div class="sub-head">8 bẫy thường gặp</div>
+    <div class="rule-card">
+      <div class="rc-header">
+        <div class="rc-icon" style="background:rgba(242,86,77,.15)">🎯</div>
+        <div><div class="rc-title">Đọc trước khi thi</div></div>
+      </div>
+      <div class="rc-body">
+        <ul>
+          <li>Propylene + H₂O → <strong class="hl-r">KHÔNG cho 2 alcohol bậc 1</strong>. Chính là propan-2-ol (bậc 2)</li>
+          <li><strong>KOH/C₂H₅OH → tách</strong> (alkene). <strong>KOH/H₂O → thủy phân</strong> (alcohol). Nhìn dung môi!</li>
+          <li>Benzene + Br₂: cần <strong>FeBr₃</strong>. Không có FeBr₃ → <strong class="hl-r">không phản ứng</strong></li>
+          <li>Nitro hóa: phải dùng <strong>HNO₃ ĐẶC</strong>. HNO₃ loãng → <strong class="hl-r">không phản ứng</strong></li>
+          <li>Alkyne <strong>giữa mạch</strong> (RC≡CR') → <strong class="hl-r">không phản ứng</strong> với AgNO₃/NH₃</li>
+          <li><strong class="hl-r">Không có</strong> dẫn xuất halogen bậc IV</li>
+          <li>Styrene (C₆H₅CH=CH₂) có liên kết đôi ngoài vòng → <strong>không phải arene thuần túy</strong></li>
+          <li>Ethylene (PTN): dehydrate ethanol 170°C. Công nghiệp: cracking hoặc dehydrogen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLASHCARDS ── -->
+  <div class="view" id="view-flashcard">
+    <div class="page-head">
+      <div class="ph-eyebrow">Drill</div>
+      <div class="ph-title">Flashcards</div>
+      <div class="ph-sub">Nhấn vào thẻ để lật — đánh giá xem đã nhớ chưa</div>
+    </div>
+    <div class="fc-progress">
+      <div class="fc-stat known"><div class="fc-stat-val" id="fc-known">0</div><div class="fc-stat-lbl">Nhớ rồi ✓</div></div>
+      <div class="fc-stat"><div class="fc-stat-val" id="fc-almost" style="color:var(--warn)">0</div><div class="fc-stat-lbl">Gần đúng</div></div>
+      <div class="fc-stat miss"><div class="fc-stat-val" id="fc-miss">0</div><div class="fc-stat-lbl">Chưa nhớ</div></div>
+    </div>
+    <div class="fc-filters" id="fc-filters"></div>
+    <div class="flashcard" id="flashcard">
+      <div class="fc-top">
+        <span class="fc-cat-badge" id="fc-badge"></span>
+        <span class="fc-nav-txt" id="fc-nav"></span>
+      </div>
+      <div class="fc-main" id="fc-main" onclick="flipFC()">
+        <div class="fc-question" id="fc-q"></div>
+        <div class="fc-flip-hint" id="fc-hint">— nhấn để xem đáp án —</div>
+        <div class="fc-answer" id="fc-ans"></div>
+      </div>
+      <div class="fc-bottom">
+        <button class="btn btn-miss" onclick="rateFC(0)">✗ Chưa nhớ</button>
+        <button class="btn" onclick="rateFC(1)" style="border-color:rgba(245,166,35,.3);color:var(--warn)">~ Gần đúng</button>
+        <button class="btn btn-ok" onclick="rateFC(2)">✓ Nhớ rồi!</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="prevFC()">← Trước</button>
+      <button class="btn btn-next" onclick="nextFC()">Tiếp →</button>
+    </div>
+  </div>
+
+  <!-- ── EQUATIONS ── -->
+  <div class="view" id="view-equations">
+    <div class="page-head">
+      <div class="ph-eyebrow">Practice</div>
+      <div class="ph-title">Luyện viết phương trình</div>
+      <div class="ph-sub">Tự viết trước, sau đó bấm xem đáp án để đối chiếu</div>
+    </div>
+    <div id="eq-list"></div>
+  </div>
+
+  <!-- ── TIMER ── -->
+  <div class="view" id="view-timer">
+    <div class="page-head">
+      <div class="ph-eyebrow">Simulate</div>
+      <div class="ph-title">Mock Test Timer</div>
+      <div class="ph-sub">45 phút — đúng thời gian thi thật, không dùng tài liệu</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-ring-wrap">
+        <svg class="timer-svg" width="200" height="200" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="88" fill="none" stroke="var(--surface3)" stroke-width="8"/>
+          <circle id="timer-arc" cx="100" cy="100" r="88" fill="none" stroke="var(--accent)" stroke-width="8"
+            stroke-dasharray="552.92" stroke-dashoffset="0" stroke-linecap="round"/>
+        </svg>
+        <div class="timer-center">
+          <div class="timer-digits" id="t-display">45:00</div>
+          <div class="timer-state" id="t-state">ready</div>
+        </div>
+      </div>
+      <div class="timer-btns">
+        <button class="btn btn-primary" id="t-btn" onclick="toggleTimer()" style="flex:none;width:120px">Bắt đầu</button>
+        <button class="btn" onclick="resetTimer()" style="flex:none">Reset</button>
+      </div>
+    </div>
+    <div class="tplan">
+      <div class="tplan-item">
+        <div class="tplan-part">Phần I — MCQ</div>
+        <div class="tplan-detail">14 câu trắc nghiệm</div>
+        <span class="tplan-badge" style="background:rgba(79,142,247,.15);color:#7bb3fc">12 phút</span>
+      </div>
+      <div class="tplan-item">
+        <div class="tplan-part">Phần II — Đúng/Sai</div>
+        <div class="tplan-detail">4 câu, 4 ý mỗi câu</div>
+        <span class="tplan-badge" style="background:rgba(245,166,35,.15);color:#f9c55a">10 phút</span>
+      </div>
+      <div class="tplan-item">
+        <div class="tplan-part">Phần III — Ngắn</div>
+        <div class="tplan-detail">6 câu trả lời ngắn</div>
+        <span class="tplan-badge" style="background:rgba(245,166,35,.15);color:#f9c55a">12 phút</span>
+      </div>
+      <div class="tplan-item">
+        <div class="tplan-part">Phần IV — Tự luận</div>
+        <div class="tplan-detail">2 câu tự luận</div>
+        <span class="tplan-badge" style="background:rgba(242,86,77,.15);color:#f7837b">11 phút</span>
+      </div>
+    </div>
+    <div class="score-record">
+      <div class="sub-head" style="margin-top:0">Ghi lại điểm thi thử</div>
+      <div class="score-entry-row">
+        <input class="score-input" type="number" id="score-in" min="0" max="10" step="0.25" placeholder="Điểm (0–10)">
+        <button class="btn btn-primary" onclick="saveScore()" style="flex:none;width:auto;padding:9px 20px">Lưu</button>
+      </div>
+      <div class="score-history" id="score-hist"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const S={
+  days:JSON.parse(localStorage.getItem('h11_days')||'[false,false,false,false,false,false,false]'),
+  scores:JSON.parse(localStorage.getItem('h11_scores')||'[]'),
+  fc:{idx:0,cat:'all',ratings:{}},
+}
+const save=()=>{localStorage.setItem('h11_days',JSON.stringify(S.days));localStorage.setItem('h11_scores',JSON.stringify(S.scores))}
+
+// ── NAV ──
+function nav(id,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
+  document.getElementById('view-'+id).classList.add('active')
+  el.classList.add('active')
+}
+
+// ── TRACKER ──
+const DAYS=[
+  {title:'Lập bảng điều kiện phản ứng',desc:'Tự tay viết bảng: phản ứng – thuốc thử – điều kiện – sản phẩm. Dùng tab Quy Tắc.',mins:'45 phút'},
+  {title:'Luyện viết phương trình',desc:'Làm Phần IV Đề 1 & 2 không nhìn sách. Sai → chép lại 3 lần.',mins:'45 phút'},
+  {title:'Khoan bẫy Đúng/Sai',desc:'Làm Phần II cả 4 đề. Ghi lại pattern của bẫy.',mins:'30 phút'},
+  {title:'Bài toán tính toán',desc:'Làm Phần III Đề 1 & 3 đầy đủ. Viết phương trình trước, tính sau.',mins:'60 phút'},
+  {title:'MCQ tốc độ',desc:'Làm Phần I Đề 3 & 4 trong 12 phút. Chỉ xem lại câu đã do dự.',mins:'30 phút'},
+  {title:'Thi thử toàn bài',desc:'Làm Đề 2 hoặc 4 — 45 phút, không tài liệu. Dùng timer ở tab Mock Test.',mins:'45 phút'},
+  {title:'Sửa điểm yếu từ ngày 6',desc:'Chỉ ôn lại những gì sai. Viết lại phương trình, đọc lại quy tắc.',mins:'45 phút'},
+]
+function buildTracker(){
+  const g=document.getElementById('day-grid');g.innerHTML=''
+  const today=S.days.filter(Boolean).length
+  DAYS.forEach((d,i)=>{
+    const isToday=!S.days[i]&&(i===0||S.days[i-1])
+    const div=document.createElement('div')
+    div.className='day-card'+(S.days[i]?' done':isToday?' today':'')
+    div.onclick=()=>{S.days[i]=!S.days[i];save();buildTracker();updateWidget()}
+    div.innerHTML=`<div class="dc-check">${S.days[i]?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="#0a0c10" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>
+    <div class="dc-body">
+      <div class="dc-day">Ngày ${i+1}</div>
+      <div class="dc-title">${d.title}</div>
+      <div class="dc-desc">${d.desc}</div>
+      <div class="dc-meta">
+        <span class="dc-tag">${d.mins}</span>
+        ${isToday?'<span class="dc-tag today-tag">Hôm nay</span>':''}
+        ${S.days[i]?'<span class="dc-tag" style="border-color:rgba(61,214,140,.3);color:var(--accent2)">✓ Xong</span>':''}
+      </div>
+    </div>`
+    g.appendChild(div)
+  })
+  updateWidget()
+}
+function updateWidget(){
+  const done=S.days.filter(Boolean).length
+  const pct=Math.round(done/7*100)
+  const cur=(6.5+done*(9-6.5)/7).toFixed(1)
+  document.getElementById('sw-fill').style.width=pct+'%'
+  document.getElementById('sw-cur').textContent=cur
+  document.getElementById('sw-days').textContent=done+' / 7 ngày'
+}
+
+// ── FLASHCARDS ──
+const CARDS=[
+  {cat:'Cộng',q:'Alkene + HX (không đối xứng)\nQuy tắc Markovnikov là gì?',a:'H → C có NHIỀU H hơn\nX → C có ÍT H hơn\n\nVí dụ: CH₃CH=CH₂ + HBr\n→ CH₃–CHBr–CH₃ (CHÍNH)'},
+  {cat:'Cộng',q:'CH₃–CH=CH₂ + H₂O →(H₃PO₄, t°)→ ?\nSản phẩm CHÍNH là gì?',a:'CH₃–CH(OH)–CH₃\n(propan-2-ol, bậc 2)\n\n⚠ KHÔNG phải 2 alcohol bậc 1!\nOH vào C2 (ít H), H vào C3 (nhiều H)'},
+  {cat:'Cộng',q:'HC≡CH + H₂O\nĐiều kiện & sản phẩm?',a:'HgSO₄, H₂SO₄ đặc, 80°C\n→ CH₃–CHO (acetaldehyde)\n\nTạo vinyl alcohol trước,\ntự chuyển vị → aldehyde'},
+  {cat:'Cộng',q:'Alkene + Br₂\nCó theo Markovnikov không?\nDùng để làm gì?',a:'KHÔNG — cộng đối xứng 2 phía C=C\nKhông có sản phẩm chính/phụ\n\nDùng nhận biết alkene:\ndd Br₂ nâu đỏ → mất màu ngay'},
+  {cat:'Cộng',q:'HC≡CH + H₂ (1:1)\nvs HC≡CH + H₂ (1:2)\nSản phẩm khác nhau thế nào?',a:'1:1 + xúc tác Lindlar (Pd/Pb):\n→ CH₂=CH₂ (dừng ở alkene)\n\n1:2 + Ni, t°:\n→ CH₃–CH₃ (hydrogen hóa hoàn toàn)'},
+  {cat:'Tách',q:'Tách HX từ dẫn xuất halogen\nDùng điều kiện gì?\nSo sánh với KOH/H₂O?',a:'KOH / C₂H₅OH (cồn), đun nóng\n→ tách HX → alkene\n\nKOH / H₂O, đun nóng\n→ thủy phân → alcohol\n\nNhìn DUNG MÔI, không phải chất tan!'},
+  {cat:'Tách',q:'1-bromopropane + KOH/EtOH\nvà 2-bromopropane + KOH/EtOH\nCho sản phẩm gì?',a:'CẢ HAI đều cho propene!\n(CH₃–CH=CH₂)\n\n⚠ Bẫy kinh điển: 2 chất khác nhau,\nvị trí tách H khác nhau,\nnhưng cùng 1 sản phẩm'},
+  {cat:'Benzene',q:'Benzene + Br₂\nCần điều kiện gì để phản ứng?',a:'Xúc tác FeBr₃ (Lewis acid)\n→ C₆H₅Br + HBr (bromobenzene)\n\n⚠ Không cần ánh sáng!\n(Khác với alkane và phản ứng cộng 666)'},
+  {cat:'Benzene',q:'Benzene + Cl₂ + ánh sáng hν\nKhác gì với Benzene + Cl₂ + FeCl₃?',a:'+ ánh sáng hν:\n→ C₆H₆Cl₆ (666) — PHẢN ỨNG CỘNG\n(3 mol Cl₂ cộng vào vòng)\n\n+ FeCl₃:\n→ C₆H₅Cl + HCl — PHẢN ỨNG THẾ'},
+  {cat:'Benzene',q:'Nitro hóa benzene\nCần tác nhân gì?\nBẫy là gì?',a:'HNO₃ ĐẶC + H₂SO₄ ĐẶC\n50–60°C\n→ C₆H₅NO₂ + H₂O\n\n⚠ HNO₃ LOÃNG → không phản ứng!\nPhải đủ cả HNO₃ đặc VÀ H₂SO₄ đặc'},
+  {cat:'Benzene',q:'Phân biệt benzene và toluene\nDùng thuốc thử nào?',a:'dd KMnO₄ đun nóng\n\nToluene: mất màu tím\n→ C₆H₅CH₃ + 2KMnO₄ →(t°)→ C₆H₅COOK...\n\nBenzene: KHÔNG mất màu KMnO₄'},
+  {cat:'Điều chế',q:'Điều chế ethylene trong PTN\nvà trong công nghiệp\n(khác nhau thế nào?)',a:'PTN: C₂H₅OH →(H₂SO₄đặc, 170°C)→ CH₂=CH₂\n\n⚠ 140°C → ether (không phải alkene!)\n\nCông nghiệp:\n• Cracking alkane\n• Dehydrogen: C₂H₆ →(xt)→ CH₂=CH₂ + H₂'},
+  {cat:'Điều chế',q:'Điều chế acetylene\ntrong PTN và công nghiệp?',a:'PTN: CaC₂ + 2H₂O → HC≡CH + Ca(OH)₂\n(đất đèn, nhiệt độ thường)\n\nCông nghiệp:\n2CH₄ →(1500°C, làm lạnh nhanh)→ HC≡CH + 3H₂\n⚠ Bắt buộc làm lạnh nhanh!'},
+  {cat:'Điều chế',q:'CH₄ + Cl₂ theo các tỉ lệ 1:1, 1:2, 1:3, 1:4\nSản phẩm hữu cơ lần lượt là gì?',a:'1:1 → CH₃Cl (chloromethane)\n1:2 → CH₂Cl₂ (dichloromethane·DCM)\n1:3 → CHCl₃ (chloroform)\n1:4 → CCl₄ (carbon tetrachloride)\n\nTỉ lệ mol quyết định sản phẩm!'},
+  {cat:'Nhận biết',q:'Nhận biết alkyne đầu mạch\nvs alkyne giữa mạch?',a:'Dùng AgNO₃/NH₃:\n\nAlkyne đầu mạch (–C≡CH):\n→ kết tủa VÀNG NHẠT (AgC≡CR)\n\nAlkyne giữa mạch (RC≡CR\'):\n→ KHÔNG phản ứng!'},
+  {cat:'Nhận biết',q:'Tóm tắt nhận biết bằng dd Br₂:\nAlkane / Alkene / Alkyne / Benzene',a:'Alkane → KHÔNG mất màu Br₂\nAlkene → mất màu ngay (lạnh)\nAlkyne đầu mạch → mất màu ngay\nBenzene → KHÔNG mất màu Br₂\nToluene → KHÔNG mất màu Br₂ (lạnh)'},
+]
+const CATS=['all','Cộng','Tách','Benzene','Điều chế','Nhận biết']
+const CAT_COLORS={Cộng:'cat-cong',Tách:'cat-tach',Benzene:'cat-benz','Điều chế':'cat-dche','Nhận biết':'cat-nhan'}
+let fcFiltered=[...CARDS],fcFlipped=false
+
+function buildFCFilters(){
+  const el=document.getElementById('fc-filters');el.innerHTML=''
+  CATS.forEach(c=>{
+    const p=document.createElement('div')
+    p.className='fc-pill'+(S.fc.cat===c?' active':'')
+    p.textContent=c==='all'?'Tất cả':c
+    p.onclick=()=>{S.fc.cat=c;S.fc.idx=0;filterFC();renderFC();buildFCFilters()}
+    el.appendChild(p)
+  })
+}
+function filterFC(){fcFiltered=S.fc.cat==='all'?[...CARDS]:CARDS.filter(c=>c.cat===S.fc.cat);if(S.fc.idx>=fcFiltered.length)S.fc.idx=0}
+function renderFC(){
+  const c=fcFiltered[S.fc.idx];fcFlipped=false
+  document.getElementById('fc-q').textContent=c.q
+  document.getElementById('fc-ans').textContent=c.a
+  document.getElementById('fc-ans').style.display='none'
+  document.getElementById('fc-hint').style.display='block'
+  document.getElementById('fc-nav').textContent=(S.fc.idx+1)+' / '+fcFiltered.length
+  const badge=document.getElementById('fc-badge')
+  badge.textContent=c.cat;badge.className='fc-cat-badge '+(CAT_COLORS[c.cat]||'cat-cong')
+  updateFCStats()
+}
+function flipFC(){
+  fcFlipped=!fcFlipped
+  document.getElementById('fc-ans').style.display=fcFlipped?'block':'none'
+  document.getElementById('fc-hint').style.display=fcFlipped?'none':'block'
+}
+function rateFC(r){const k=S.fc.cat+'_'+S.fc.idx;S.fc.ratings[k]=r;updateFCStats();nextFC()}
+function nextFC(){S.fc.idx=(S.fc.idx+1)%fcFiltered.length;renderFC()}
+function prevFC(){S.fc.idx=(S.fc.idx-1+fcFiltered.length)%fcFiltered.length;renderFC()}
+function updateFCStats(){
+  const v=Object.values(S.fc.ratings)
+  document.getElementById('fc-known').textContent=v.filter(x=>x===2).length
+  document.getElementById('fc-almost').textContent=v.filter(x=>x===1).length
+  document.getElementById('fc-miss').textContent=v.filter(x=>x===0).length
+}
+
+// ── EQUATIONS ──
+const EQS=[
+  {t:'Alkane + Cl₂ theo tỉ lệ 1:1',p:'Viết phương trình CH₄ + Cl₂ dưới ánh sáng, tỉ lệ 1:1',a:'CH₄ + Cl₂ →(hν)→ CH₃Cl + HCl\n(chloromethane)'},
+  {t:'Alkene + H₂O — ethylene',p:'Viết phương trình hydrate hóa ethylene (đầy đủ điều kiện)',a:'CH₂=CH₂ + H₂O →(H₃PO₄, t°)→ CH₃–CH₂OH\n(ethanol)'},
+  {t:'Alkene + H₂O — propylene',p:'Viết phương trình propylene + H₂O, ghi rõ sản phẩm chính',a:'CH₃–CH=CH₂ + H₂O →(H₃PO₄, t°)→ CH₃–CH(OH)–CH₃\n(propan-2-ol, bậc 2 — CHÍNH theo Markovnikov)'},
+  {t:'Acetylene + H₂O',p:'Viết phương trình HC≡CH + H₂O (đầy đủ điều kiện)',a:'HC≡CH + H₂O →(HgSO₄, H₂SO₄đặc, 80°C)→ CH₃–CHO\n(acetaldehyde — qua enol trung gian)'},
+  {t:'Benzene — thế halogen',p:'Viết phương trình benzene + Br₂ (điều kiện đầy đủ)',a:'C₆H₆ + Br₂ →(FeBr₃)→ C₆H₅Br + HBr\n(bromobenzene)'},
+  {t:'Benzene — nitro hóa',p:'Viết phương trình nitro hóa benzene (điều kiện đầy đủ)',a:'C₆H₆ + HNO₃đặc →(H₂SO₄đặc, 50-60°C)→ C₆H₅NO₂ + H₂O\n(nitrobenzene)'},
+  {t:'Benzene + Cl₂ dưới ánh sáng',p:'Viết phương trình cộng Cl₂ vào benzene dưới ánh sáng',a:'C₆H₆ + 3Cl₂ →(hν)→ C₆H₆Cl₆\n(1,2,3,4,5,6-hexachlorocyclohexane — thuốc 666)'},
+  {t:'Điều chế ethylene trong PTN',p:'Viết phương trình điều chế ethylene từ ethanol',a:'C₂H₅OH →(H₂SO₄đặc, 170°C)→ CH₂=CH₂↑ + H₂O\n(⚠ phải đủ 170°C — 140°C cho ether C₂H₅OC₂H₅)'},
+  {t:'Điều chế acetylene từ đất đèn',p:'Viết phương trình điều chế acetylene từ CaC₂',a:'CaC₂ + 2H₂O → HC≡CH↑ + Ca(OH)₂\n(đất đèn + nước, nhiệt độ thường)'},
+  {t:'Tách HX — 1-bromopropane',p:'Viết phương trình 1-bromopropane + KOH/C₂H₅OH đun nóng',a:'CH₃CH₂CH₂Br + KOH →(C₂H₅OH, t°)→ CH₃–CH=CH₂ + KBr + H₂O\n(propene — sản phẩm duy nhất)'},
+  {t:'Điều chế TNT từ toluene',p:'Viết phương trình nitro hóa toluene 3 lần tạo TNT',a:'C₆H₅CH₃ + 3HNO₃đặc →(H₂SO₄đặc, t°)→ C₆H₂(NO₂)₃CH₃ + 3H₂O\n(2,4,6-trinitrotoluene — TNT)'},
+  {t:'Alkyne nhận biết — AgNO₃/NH₃',p:'Viết phương trình acetylene + AgNO₃/NH₃',a:'HC≡CH + 2AgNO₃ + 2NH₃ → AgC≡CAg↓ + 2NH₄NO₃\n(kết tủa vàng nhạt — nhận biết alkyne đầu mạch)'},
+]
+function buildEQ(){
+  const list=document.getElementById('eq-list');list.innerHTML=''
+  EQS.forEach((e,i)=>{
+    const d=document.createElement('div');d.className='eq-item'
+    d.innerHTML=`<div class="eq-head"><span class="eq-title">${e.t}</span><span class="eq-num">${i+1} / ${EQS.length}</span></div>
+    <div class="eq-body">
+      <div class="eq-prompt">${e.p}</div>
+      <textarea class="eq-input" placeholder="Viết phương trình ở đây..." rows="2"></textarea>
+      <div class="eq-answer" id="eqa-${i}">${e.a}</div>
+    </div>
+    <div class="eq-footer">
+      <button class="btn" onclick="toggleEQ(${i})" id="eqbtn-${i}">Xem đáp án</button>
+    </div>`
+    list.appendChild(d)
+  })
+}
+function toggleEQ(i){
+  const el=document.getElementById('eqa-'+i),btn=document.getElementById('eqbtn-'+i)
+  const show=el.style.display==='block'
+  el.style.display=show?'none':'block'
+  btn.textContent=show?'Xem đáp án':'Ẩn đáp án'
+}
+
+// ── TIMER ──
+let tSec=2700,tRunning=false,tInt=null
+function toggleTimer(){
+  if(tRunning){clearInterval(tInt);tRunning=false;document.getElementById('t-btn').textContent='Tiếp tục';document.getElementById('t-state').textContent='paused'}
+  else{tRunning=true;document.getElementById('t-btn').textContent='Dừng';document.getElementById('t-state').textContent='running';tInt=setInterval(tickT,1000)}
+}
+function tickT(){if(tSec<=0){clearInterval(tInt);tRunning=false;document.getElementById('t-btn').textContent='Bắt đầu';document.getElementById('t-state').textContent='time\'s up!';return}tSec--;renderTimer()}
+function resetTimer(){clearInterval(tInt);tRunning=false;tSec=2700;renderTimer();document.getElementById('t-btn').textContent='Bắt đầu';document.getElementById('t-state').textContent='ready'}
+function renderTimer(){
+  const m=Math.floor(tSec/60),s=tSec%60
+  document.getElementById('t-display').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')
+  const pct=tSec/2700,circ=552.92
+  document.getElementById('timer-arc').setAttribute('stroke-dashoffset',circ*(1-pct))
+  const col=tSec<300?'var(--danger)':tSec<600?'var(--warn)':'var(--accent)'
+  document.getElementById('timer-arc').setAttribute('stroke',col)
+}
+function saveScore(){
+  const v=parseFloat(document.getElementById('score-in').value)
+  if(isNaN(v)||v<0||v>10)return
+  S.scores.push({v,d:new Date().toLocaleDateString('vi-VN')});save();renderScoreHist()
+  document.getElementById('score-in').value=''
+}
+function renderScoreHist(){
+  const el=document.getElementById('score-hist');el.innerHTML=''
+  S.scores.slice().reverse().forEach((s,i)=>{
+    const col=s.v>=8?'var(--accent2)':s.v>=7?'var(--warn)':'var(--danger)'
+    el.innerHTML+=`<div class="sh-item"><span class="sh-label">Lần ${S.scores.length-i} · ${s.d}</span><span class="sh-score" style="color:${col}">${s.v.toFixed(1)}</span></div>`
+  })
+}
+
+buildTracker();buildFCFilters();filterFC();renderFC();buildEQ();renderScoreHist()
+</script>
+</body>
+</html>
